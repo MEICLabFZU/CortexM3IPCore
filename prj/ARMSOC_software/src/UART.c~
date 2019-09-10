@@ -1,0 +1,206 @@
+#include "UART.h"
+
+
+// Output a character
+
+	unsigned char Uart1Putc(unsigned char my_ch)
+{
+  while ((UART1->STATE & 1)); // Wait if Transmit Holding register is full
+  UART1->DATA = my_ch; // write to transmit holding register
+
+	return (my_ch);
+}
+
+//uart1 init
+void uart1init(void)
+{
+//	UART1->BAUDDIV = 0x16;	//only for test
+	UART1->BAUDDIV = 0x0a2c;
+	UART1->CTRL = 0x03;	//r&x
+}
+
+
+
+// Get a character
+unsigned char Uart1Getc(void)
+{
+  unsigned char my_ch;
+
+  while ((UART1->STATE & 2)!=2); // Wait if Receive Holding register is empty
+
+
+  my_ch = UART1->DATA;
+//	UART1->STATE & 0x8;
+
+  //Convert CR to LF
+  if(my_ch == '\r')
+     my_ch = '\n';
+
+  return (my_ch);
+}
+
+unsigned char Uart1GetLine()
+{
+	char ctemp, string[30] = 0;
+	int cnt = 0, flag = 1;
+	while(flag)
+	{
+	ctemp = Uart1Getc();
+	if (ctemp == '\n'){
+		flag = 0;
+		continue;
+	}
+	else {
+		string[cnt] = ctemp;
+		cnt++;
+		}
+	}
+
+	return string;
+}
+
+
+//// Get line from terminal
+//unsigned int Get1Line (char *lp, unsigned int len)
+//{
+//   unsigned int cnt = 0;
+//   char c;
+
+//    do {
+//        c = Uart1Getc ();
+//        switch (c) {
+//            case CNTLQ:                       /* ignore Control S/Q             */
+//            case CNTLS:
+//                break;
+//            case BACKSPACE:
+//            case DEL:
+//                if (cnt == 0) {
+//                    break;
+//                }
+//                cnt--;                         /* decrement count                */
+//                lp--;                          /* and line pointer               */
+//                UartPutc (0x08);               /* echo backspace                 */
+//                UartPutc (' ');
+//                UartPutc (0x08);
+//                fflush (stdout);
+//                break;
+//            case ESC:
+//            case 0:
+//                *lp = 0;                       /* ESC - stop editing line        */
+//                return (FALSE);
+//            case CR:                           /* CR - done, stop editing line   */
+//                *lp = c;
+//                lp++;                          /* increment line pointer         */
+//                cnt++;                         /* and count                      */
+//                c = LF;
+//            default:
+//                UartPutc (*lp = c);            /* echo and store character       */
+//                fflush (stdout);
+//                lp++;                          /* increment line pointer         */
+//                cnt++;                         /* and count                      */
+//                break;
+//        }
+//    } while (cnt < len - 2  &&  c != LF);      /* check limit and CR             */
+//    *lp = 0;                                   /* mark end of string             */
+//    return (TRUE);
+//}
+
+// Output a character
+
+	unsigned char Uart2Putc(unsigned char my_ch)
+{
+  while ((UART2->STATE & 1)); // Wait if Transmit Holding register is full
+  UART2->DATA = my_ch; // write to transmit holding register
+  return my_ch;
+}
+
+//uart1 init
+void uart2init(void)
+{
+//	UART2->BAUDDIV = 0x16;	//only for test
+	UART2->BAUDDIV = 0x0a2c;
+	UART2->CTRL = 0x03;	//r&x
+}
+
+
+
+// Get a character
+unsigned char Uart2Getc(void)
+{
+  unsigned char my_ch;
+
+  while ((UART2->STATE & 2)!=2); // Wait if Receive Holding register is empty
+
+
+  my_ch = UART2->DATA;
+
+  //Convert CR to LF
+  if(my_ch == '\r')
+     my_ch = '\n';
+
+  return (my_ch);
+}
+
+
+unsigned char Uart2GetLine()
+{
+	char ctemp, string[30]=0;
+	int cnt = 0, flag = 1;
+	while(flag)
+	{
+	ctemp = Uart2Getc();
+	if (ctemp == '\n'){
+		flag = 0;
+		continue;
+	}
+	else {
+		string[cnt] = ctemp;
+		cnt++;
+		}
+	}
+	return string;
+}
+
+
+
+
+
+
+
+
+
+// Output a character
+
+	unsigned char Uart0Putc(unsigned char my_ch)
+{
+  while ((UART0->STATE & 1)); // Wait if Transmit Holding register is full
+  UART0->DATA = my_ch; // write to transmit holding register
+  return (my_ch);
+}
+
+//uart1 init
+void uart0init(void)
+{
+//	UART2->BAUDDIV = 0x16;	//only for test
+	UART0->BAUDDIV = 0x0a2c;
+	UART0->CTRL = 0x03;	//r&x
+}
+
+
+
+// Get a character
+unsigned char Uart0Getc(void)
+{
+  unsigned char my_ch;
+
+  while ((UART0->STATE & 2)!=2); // Wait if Receive Holding register is empty
+
+
+  my_ch = UART0->DATA;
+
+  //Convert CR to LF
+  if(my_ch == '\r')
+     my_ch = '\n';
+
+  return (my_ch);
+}

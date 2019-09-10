@@ -1,0 +1,8 @@
+#ifndef SYN6288_H
+#define SYN6288_H
+
+#include "DE2_115.h"
+
+
+
+#endif

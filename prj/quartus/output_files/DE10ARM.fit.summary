@@ -1,0 +1,18 @@
+Fitter Status : Successful - Sun Jun 02 16:12:24 2019
+Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
+Revision Name : DE10ARM
+Top-level Entity Name : DE10ARM
+Family : MAX 10
+Device : 10M50DAF484C7G
+Timing Models : Final
+Total logic elements : 23,319 / 49,760 ( 47 % )
+    Total combinational functions : 22,376 / 49,760 ( 45 % )
+    Dedicated logic registers : 5,760 / 49,760 ( 12 % )
+Total registers : 5760
+Total pins : 27 / 360 ( 8 % )
+Total virtual pins : 0
+Total memory bits : 1,048,576 / 1,677,312 ( 63 % )
+Embedded Multiplier 9-bit elements : 6 / 288 ( 2 % )
+Total PLLs : 0 / 4 ( 0 % )
+UFM blocks : 0 / 1 ( 0 % )
+ADC blocks : 0 / 2 ( 0 % )

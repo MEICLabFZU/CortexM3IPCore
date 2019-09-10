@@ -1,0 +1,2 @@
+Info (10281): Verilog HDL Declaration information at AHB2ROM.v(18): object "HRDATA" differs only in case from object "hrdata" in the same scope File: D:/Project/FPGA/ICC3rd/DE10ARM/AHB2ROM.v Line: 18
+Warning (10268): Verilog HDL information at AHB2MEM.v(54): always construct contains both blocking and non-blocking assignments File: D:/Project/FPGA/ICC3rd/DE10ARM/arm-soc/AHB2MEM.v Line: 54

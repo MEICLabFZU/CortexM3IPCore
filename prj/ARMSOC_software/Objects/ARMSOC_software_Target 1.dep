@@ -1,0 +1,140 @@
+Dependencies for Project 'ARMSOC_software', Target 'Target 1': (DO NOT MODIFY !)
+F (.\include\UART.h)(0x5BD328F7)()
+F (.\include\gpio.h)(0x5B0A25F4)()
+F (.\include\IR.h)(0x5AFBD402)()
+F (.\include\systick.h)(0x5AF56FF4)()
+F (.\src\main.h)(0x5BD2F93E)()
+F (.\src\main.c)(0x5C8B644B)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\main.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+I (src\main.h)(0x5BD2F93E)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdlib.h)(0x588B8344)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+I (.\include\gpio.h)(0x5B0A25F4)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (.\include\systick.h)(0x5AF56FF4)
+I (.\include\UART.h)(0x5BD328F7)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\string.h)(0x588B8344)
+F (.\src\ds18b20.c)(0x5B0A32D4)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\ds18b20.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\ds18b20.crf --depend .\objects\ds18b20.d)
+I (.\include\ds18b20.h)(0x5AF56FFC)
+I (.\include\systick.h)(0x5AF56FF4)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (.\include\gpio.h)(0x5B0A25F4)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+F (.\TTS\SYN6288.C)(0x5B0637E0)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\syn6288.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\syn6288.crf --depend .\objects\syn6288.d)
+I (TTS\SYN6288.h)(0x5B04DED0)
+I (.\include\UART.h)(0x5BD328F7)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\string.h)(0x588B8344)
+F (.\OLED\drive.c)(0x5B0B6FC4)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\drive.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\drive.crf --depend .\objects\drive.d)
+I (OLED\drive.h)(0x5B0A6858)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdlib.h)(0x588B8344)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (.\include\gpio.h)(0x5B0A25F4)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+I (.\include\systick.h)(0x5AF56FF4)
+F (.\src\ARMSOC.s)(0x5BCECAC4)(--cpu Cortex-M3 --li -g --apcs=interwork -I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 525" --pd "ARMCM3 SETA 1"--list .\listings\armsoc.lst --xref -o .\objects\armsoc.o --depend .\objects\armsoc.d)
+F (.\src\gpio.c)(0x5B0A4CC4)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\gpio.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\gpio.crf --depend .\objects\gpio.d)
+I (.\include\gpio.h)(0x5B0A25F4)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (.\include\systick.h)(0x5AF56FF4)
+F (.\src\systick.c)(0x5BCEE2DB)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\systick.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\systick.crf --depend .\objects\systick.d)
+I (.\include\systick.h)(0x5AF56FF4)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+F (.\src\UART.c)(0x5BD328F7)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\uart.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\uart.crf --depend .\objects\uart.d)
+I (.\include\UART.h)(0x5BD328F7)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdint.h)(0x588B8344)
+I (.\include\DE2_115.h)(0x5BD3BFE1)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\stdio.h)(0x588B8344)
+I (.\include\core_cm3.h)(0x5AF56414)
+I (.\include\core_cmInstr.h)(0x5AF56414)
+I (.\include\core_cmFunc.h)(0x5AF56416)
+I (D:\Coding\MDKeil\ARM\ARMCC\include\string.h)(0x588B8344)
+F (.\ucosii\source\os_core.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_core.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_core.crf --depend .\objects\os_core.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_flag.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_flag.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_flag.crf --depend .\objects\os_flag.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_mbox.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_mbox.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_mbox.crf --depend .\objects\os_mbox.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_mem.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_mem.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_mem.crf --depend .\objects\os_mem.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_mutex.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_mutex.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_mutex.crf --depend .\objects\os_mutex.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_q.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_q.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_q.crf --depend .\objects\os_q.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_sem.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_sem.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_sem.crf --depend .\objects\os_sem.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_task.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_task.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_task.crf --depend .\objects\os_task.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_time.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_time.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_time.crf --depend .\objects\os_time.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\source\os_tmr.c)(0x486309CF)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_tmr.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_tmr.crf --depend .\objects\os_tmr.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\port\os_cpu_a_keil.asm)(0x5B9E53A2)(--cpu Cortex-M3 --li -g --apcs=interwork -I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 525" --pd "ARMCM3 SETA 1"--list .\listings\os_cpu_a_keil.lst --xref -o .\objects\os_cpu_a_keil.o --depend .\objects\os_cpu_a_keil.d)
+F (.\ucosii\port\os_cpu_c_keil.c)(0x5BCEE446)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_cpu_c_keil.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_cpu_c_keil.crf --depend .\objects\os_cpu_c_keil.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)
+F (.\ucosii\port\os_dbg_keil.c)(0x5B9E53A2)(--c99 -c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\Listings\\" -I .\include -I .\TTS -I .\OLED -I .\ucosii\config -I .\ucosii\port -I .\ucosii\source --gnu-I.\RTE\_Target_1-ID:\Coding\MDKeil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM3\Include-ID:\Coding\MDKeil\ARM\CMSIS\Include-D__UVISION_VERSION="525" -DARMCM3-o .\objects\os_dbg_keil.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\os_dbg_keil.crf --depend .\objects\os_dbg_keil.d)
+I (.\ucosii\source\ucos_ii.h)(0x486309CF)
+I (.\ucosii\config\app_cfg.h)(0x5A1298E7)
+I (.\ucosii\config\os_cfg.h)(0x5A128417)
+I (.\ucosii\port\os_cpu.h)(0x48A53DE0)

@@ -1,0 +1,113 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "TDO",
+					"strict" : false
+				},
+				{
+					"name" : "TRESET",
+					"strict" : false
+				},
+				{
+					"name" : "Treg_sys_rst_n",
+					"strict" : false
+				},
+				{
+					"name" : "uart0_txd",
+					"strict" : false
+				},
+				{
+					"name" : "uart0_txen",
+					"strict" : false
+				},
+				{
+					"name" : "uart1_txd",
+					"strict" : false
+				},
+				{
+					"name" : "uart1_txen",
+					"strict" : false
+				},
+				{
+					"name" : "uart2_txd",
+					"strict" : false
+				},
+				{
+					"name" : "uart2_txen",
+					"strict" : false
+				},
+				{
+					"name" : "TMS",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[0]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[1]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[2]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[3]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[4]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[5]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[6]",
+					"strict" : false
+				},
+				{
+					"name" : "b_pad_gpio_porta[7]",
+					"strict" : false
+				},
+				{
+					"name" : "RESET",
+					"strict" : false
+				},
+				{
+					"name" : "TCK",
+					"strict" : false
+				},
+				{
+					"name" : "CLK",
+					"strict" : false
+				},
+				{
+					"name" : "RESETn",
+					"strict" : false
+				},
+				{
+					"name" : "TDI",
+					"strict" : false
+				},
+				{
+					"name" : "uart2_rxd",
+					"strict" : false
+				},
+				{
+					"name" : "uart1_rxd",
+					"strict" : false
+				},
+				{
+					"name" : "uart0_rxd",
+					"strict" : false
+				}
+			]
+		}
+	]
+}

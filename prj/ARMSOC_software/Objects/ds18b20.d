@@ -1,0 +1,11 @@
+.\objects\ds18b20.o: src\ds18b20.c
+.\objects\ds18b20.o: .\include\ds18b20.h
+.\objects\ds18b20.o: .\include\systick.h
+.\objects\ds18b20.o: .\include\core_cm3.h
+.\objects\ds18b20.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\ds18b20.o: .\include\core_cmInstr.h
+.\objects\ds18b20.o: .\include\core_cmFunc.h
+.\objects\ds18b20.o: .\include\gpio.h
+.\objects\ds18b20.o: .\include\DE2_115.h
+.\objects\ds18b20.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\ds18b20.o: .\include\core_cm3.h

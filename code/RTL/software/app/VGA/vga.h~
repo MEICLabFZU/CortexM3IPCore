@@ -1,0 +1,9 @@
+#ifndef _VGA_H
+#define _VGA_H
+#include <stdint.h>
+#include <stdio.h>
+#include "core_cm3.h"
+#define VGAD (int*)0x40020000
+
+#endif
+

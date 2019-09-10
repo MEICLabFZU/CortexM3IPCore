@@ -1,0 +1,51 @@
+#include "gpio.h"
+
+void gpioini()
+{
+
+	*GPIO_DR	=0x0; 	
+	*GPIO_DDR	=0x0;
+	*GPIO_CTL	=0x0;
+	*GPIO_INTEN	=0x0;
+	*GPIO_INTMASK	=0x0;
+	*GPIO_INTTYPE	=0x0;
+	*GPIO_INTPOL	=0x0;
+	*GPIO_INTSTA	=0x0;
+	*GPIO_INTRAW	=0x0;
+	*GPIO_EOI	=0x0;
+	*GPIO_EXT	=0x0;
+	*GPIO_SYNC	=0x0;
+
+}
+
+void bit_set(unsigned int* GPIO_X, uint8_t GPIO_PIN, uint8_t flag)
+{
+
+	if(flag==1)
+	{
+		*GPIO_X=*GPIO_X|GPIO_PIN;
+
+	}
+	if(flag==0)
+	{
+		GPIO_PIN=~GPIO_PIN;
+		*GPIO_X=*GPIO_X&GPIO_PIN;
+	}
+}
+
+uint8_t bit_read(unsigned int* GPIO_X,uint8_t GPIO_PIN)
+{
+	uint8_t bitmask;
+	uint8_t bitdata = 0xff;
+	bitmask = *GPIO_X & GPIO_PIN;
+	if(!bitmask)
+	{
+		bitdata = 0;
+	}
+	else
+	{
+		bitdata = 1;
+	}
+	return bitdata;
+	
+}

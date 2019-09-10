@@ -1,0 +1,9 @@
+.\objects\uart.o: src\UART.c
+.\objects\uart.o: .\include\UART.h
+.\objects\uart.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\uart.o: .\include\DE2_115.h
+.\objects\uart.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\uart.o: .\include\core_cm3.h
+.\objects\uart.o: .\include\core_cmInstr.h
+.\objects\uart.o: .\include\core_cmFunc.h
+.\objects\uart.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\string.h

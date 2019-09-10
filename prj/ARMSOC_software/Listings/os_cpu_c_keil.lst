@@ -1,0 +1,2822 @@
+L 1 "ucosii\port\os_cpu_c_keil.c"
+N/*
+N*********************************************************************************************************
+N*                                               uC/OS-II
+N*                                         The Real-Time Kernel
+N*
+N*
+N*                                (c) Copyright 2006, Micrium, Weston, FL
+N*                                          All Rights Reserved
+N*
+N*                                           ARM Cortex-M3 Port
+N*
+N* File      : OS_CPU_C.C
+N* Version   : V2.86
+N* By        : Jean J. Labrosse
+N*
+N* For       : ARMv7M Cortex-M3
+N* Mode      : Thumb2
+N* Toolchain : IAR EWARM
+N*********************************************************************************************************
+N*/
+N#define SystemCoreClock 25000000
+N#define  OS_CPU_GLOBALS
+N#include <ucos_ii.h>
+L 1 ".\ucosii\source\ucos_ii.h" 1
+N/*
+N*********************************************************************************************************
+N*                                                uC/OS-II
+N*                                          The Real-Time Kernel
+N*
+N*                              (c) Copyright 1992-2007, Micrium, Weston, FL
+N*                                           All Rights Reserved
+N*
+N* File    : uCOS_II.H
+N* By      : Jean J. Labrosse
+N* Version : V2.86
+N*
+N* LICENSING TERMS:
+N* ---------------
+N*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
+N* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
+N* its use in your product. We provide ALL the source code for your convenience and to help you experience
+N* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
+N* licensing fee.
+N*********************************************************************************************************
+N*/
+N
+N#ifndef   OS_uCOS_II_H
+N#define   OS_uCOS_II_H
+N
+N#ifdef __cplusplus
+Sextern "C" {
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                          uC/OS-II VERSION NUMBER
+N*********************************************************************************************************
+N*/
+N
+N#define  OS_VERSION                 286u                /* Version of uC/OS-II (Vx.yy mult. by 100)    */
+N
+N/*
+N*********************************************************************************************************
+N*                                           INCLUDE HEADER FILES
+N*********************************************************************************************************
+N*/
+N
+N#include <app_cfg.h>
+L 1 ".\ucosii\config\app_cfg.h" 1
+N/*
+N*********************************************************************************************************
+N*                                              EXAMPLE CODE
+N*
+N*                          (c) Copyright 2003-2006; Micrium, Inc.; Weston, FL
+N*
+N*               All rights reserved.  Protected by international copyright laws.
+N*               Knowledge of the source code may NOT be used to develop a similar product.
+N*               Please help us continue to provide the Embedded community with the finest
+N*               software available.  Your honesty is greatly appreciated.
+N*********************************************************************************************************
+N*/
+N
+N/*
+N*********************************************************************************************************
+N*
+N*                                      APPLICATION CONFIGURATION
+N*
+N*                                     ST Microelectronics STM32
+N*                                              with the
+N*                                   STM3210B-EVAL Evaluation Board
+N*
+N* Filename      : app_cfg.h
+N* Version       : V1.10
+N* Programmer(s) : BAN
+N*********************************************************************************************************
+N*/
+N
+N#ifndef  __APP_CFG_H__
+N#define  __APP_CFG_H__
+N
+N/*
+N*********************************************************************************************************
+N*                                       MODULE ENABLE / DISABLE
+N*********************************************************************************************************
+N*/
+N
+N#define  APP_OS_PROBE_EN                         DEF_ENABLED
+N#define  APP_PROBE_COM_EN                        DEF_ENABLED
+N
+N/*
+N*********************************************************************************************************
+N*                                              TASKS NAMES
+N*********************************************************************************************************
+N*/
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                            TASK PRIORITIES
+N*********************************************************************************************************
+N*/
+N
+N#define  APP_TASK_START_PRIO                               3
+N#define  APP_TASK_KBD_PRIO                                 4
+N
+N#define  APP_TASK_USER_IF_PRIO                            12
+N
+N#define  OS_PROBE_TASK_PRIO              (OS_LOWEST_PRIO - 3)
+N#define  OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
+N
+N/*
+N*********************************************************************************************************
+N*                                            TASK STACK SIZES
+N*                             Size of the task stacks (# of OS_STK entries)
+N*********************************************************************************************************
+N*/
+N
+N#define  APP_TASK_START_STK_SIZE                         128
+N#define  APP_TASK_KBD_STK_SIZE                           128
+N
+N#define  APP_TASK_USER_IF_STK_SIZE                       256
+N
+N#define  OS_PROBE_TASK_STK_SIZE                          128
+N
+N/*
+N*********************************************************************************************************
+N*                                                  LIB
+N*********************************************************************************************************
+N*/
+N
+N#define  uC_CFG_OPTIMIZE_ASM_EN                 DEF_ENABLED
+N#define  LIB_STR_CFG_FP_EN                      DEF_DISABLED
+N
+N/*
+N*********************************************************************************************************
+N*                                                 PROBE
+N*********************************************************************************************************
+N*/
+N
+N#define  OS_PROBE_TASK                                     1    /* Task will be created for uC/Probe OS Plug-In.        */
+N#define  OS_PROBE_TMR_32_BITS                              0    /* uC/Probe OS Plugin timer is a 16-bit timer.          */
+N#define  OS_PROBE_TIMER_SEL                                2    /* Select timer 2.                                      */
+N#define  OS_PROBE_HOOKS_EN                                 1    /* Hooks to update OS_TCB profiling members included.   */
+N#define  OS_PROBE_USE_FP                                   1
+N
+N
+N
+N
+N#endif
+L 45 ".\ucosii\source\ucos_ii.h" 2
+N#include <os_cfg.h>
+L 1 ".\ucosii\config\os_cfg.h" 1
+N/*
+N*********************************************************************************************************
+N*                                                uC/OS-II
+N*                                          The Real-Time Kernel
+N*                                  uC/OS-II Configuration File for V2.8x
+N*
+N*                               (c) Copyright 2005-2007, Micrium, Weston, FL
+N*                                          All Rights Reserved
+N*
+N*
+N* File    : OS_CFG.H
+N* By      : Jean J. Labrosse
+N* Version : V2.86
+N*
+N* LICENSING TERMS:
+N* ---------------
+N*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
+N* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
+N* its use in your product. We provide ALL the source code for your convenience and to help you experience
+N* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
+N* licensing fee.
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_CFG_H
+N#define OS_CFG_H
+N
+N
+N                                       /* ---------------------- MISCELLANEOUS ----------------------- */
+N#define OS_APP_HOOKS_EN           0    /* 1 Application-defined hooks are called from the uC/OS-II hooks */
+N#define OS_ARG_CHK_EN             0    /* Enable (1) or Disable (0) argument checking                  */
+N#define OS_CPU_HOOKS_EN           1    /* uC/OS-II hooks are found in the processor port files         */
+N
+N#define OS_DEBUG_EN               1    /* Enable(1) debug variables                                    */
+N
+N#define OS_EVENT_MULTI_EN         1    /* Include code for OSEventPendMulti()                          */
+N#define OS_EVENT_NAME_SIZE       16    /* Determine the size of the name of a Sem, Mutex, Mbox or Q    */
+N
+N#define OS_LOWEST_PRIO           31    /* Defines the lowest priority that can be assigned ...         */
+N                                       /* ... MUST NEVER be higher than 254!                           */
+N
+N#define OS_MAX_EVENTS            10    /* Max. number of event control blocks in your application      */
+N#define OS_MAX_FLAGS              5    /* Max. number of Event Flag Groups    in your application      */
+N#define OS_MAX_MEM_PART           5    /* Max. number of memory partitions                             */
+N#define OS_MAX_QS                 4    /* Max. number of queue control blocks in your application      */
+N#define OS_MAX_TASKS             20    /* Max. number of tasks in your application, MUST be >= 2       */
+N
+N#define OS_SCHED_LOCK_EN          1    /* Include code for OSSchedLock() and OSSchedUnlock()           */
+N
+N#define OS_TICK_STEP_EN           1    /* Enable tick stepping feature for uC/OS-View                  */
+N#define OS_TICKS_PER_SEC       1000    /* Set the number of ticks in one second                        */
+N
+N
+N                                       /* --------------------- TASK STACK SIZE ---------------------- */
+N#define OS_TASK_TMR_STK_SIZE    128    /* Timer      task stack size (# of OS_STK wide entries)        */
+N#define OS_TASK_STAT_STK_SIZE   128    /* Statistics task stack size (# of OS_STK wide entries)        */
+N#define OS_TASK_IDLE_STK_SIZE   128    /* Idle       task stack size (# of OS_STK wide entries)        */
+N
+N
+N                                       /* --------------------- TASK MANAGEMENT ---------------------- */
+N#define OS_TASK_CHANGE_PRIO_EN    1    /*     Include code for OSTaskChangePrio()                      */
+N#define OS_TASK_CREATE_EN         1    /*     Include code for OSTaskCreate()                          */
+N#define OS_TASK_CREATE_EXT_EN     1    /*     Include code for OSTaskCreateExt()                       */
+N#define OS_TASK_DEL_EN            1    /*     Include code for OSTaskDel()                             */
+N#define OS_TASK_NAME_SIZE        16    /*     Determine the size of a task name                        */
+N#define OS_TASK_PROFILE_EN        1    /*     Include variables in OS_TCB for profiling                */
+N#define OS_TASK_QUERY_EN          1    /*     Include code for OSTaskQuery()                           */
+N#define OS_TASK_STAT_EN           1    /*     Enable (1) or Disable(0) the statistics task             */
+N#define OS_TASK_STAT_STK_CHK_EN   1    /*     Check task stacks from statistic task                    */
+N#define OS_TASK_SUSPEND_EN        1    /*     Include code for OSTaskSuspend() and OSTaskResume()      */
+N#define OS_TASK_SW_HOOK_EN        1    /*     Include code for OSTaskSwHook()                          */
+N
+N
+N                                       /* ----------------------- EVENT FLAGS ------------------------ */
+N#define OS_FLAG_EN                1    /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
+N#define OS_FLAG_ACCEPT_EN         1    /*     Include code for OSFlagAccept()                          */
+N#define OS_FLAG_DEL_EN            1    /*     Include code for OSFlagDel()                             */
+N#define OS_FLAG_NAME_SIZE        16    /*     Determine the size of the name of an event flag group    */
+N#define OS_FLAG_QUERY_EN          1    /*     Include code for OSFlagQuery()                           */
+N#define OS_FLAG_WAIT_CLR_EN       1    /* Include code for Wait on Clear EVENT FLAGS                   */
+N#define OS_FLAGS_NBITS           16    /* Size in #bits of OS_FLAGS data type (8, 16 or 32)            */
+N
+N
+N                                       /* -------------------- MESSAGE MAILBOXES --------------------- */
+N#define OS_MBOX_EN                1    /* Enable (1) or Disable (0) code generation for MAILBOXES      */
+N#define OS_MBOX_ACCEPT_EN         1    /*     Include code for OSMboxAccept()                          */
+N#define OS_MBOX_DEL_EN            1    /*     Include code for OSMboxDel()                             */
+N#define OS_MBOX_PEND_ABORT_EN     1    /*     Include code for OSMboxPendAbort()                       */
+N#define OS_MBOX_POST_EN           1    /*     Include code for OSMboxPost()                            */
+N#define OS_MBOX_POST_OPT_EN       1    /*     Include code for OSMboxPostOpt()                         */
+N#define OS_MBOX_QUERY_EN          1    /*     Include code for OSMboxQuery()                           */
+N
+N
+N                                       /* --------------------- MEMORY MANAGEMENT -------------------- */
+N#define OS_MEM_EN                 0    /* Enable (1) or Disable (0) code generation for MEMORY MANAGER */
+N#define OS_MEM_NAME_SIZE         16    /*     Determine the size of a memory partition name            */
+N#define OS_MEM_QUERY_EN           1    /*     Include code for OSMemQuery()                            */
+N
+N
+N                                       /* ---------------- MUTUAL EXCLUSION SEMAPHORES --------------- */
+N#define OS_MUTEX_EN               0    /* Enable (1) or Disable (0) code generation for MUTEX          */
+N#define OS_MUTEX_ACCEPT_EN        1    /*     Include code for OSMutexAccept()                         */
+N#define OS_MUTEX_DEL_EN           1    /*     Include code for OSMutexDel()                            */
+N#define OS_MUTEX_QUERY_EN         1    /*     Include code for OSMutexQuery()                          */
+N
+N
+N                                       /* ---------------------- MESSAGE QUEUES ---------------------- */
+N#define OS_Q_EN                   0    /* Enable (1) or Disable (0) code generation for QUEUES         */
+N#define OS_Q_ACCEPT_EN            1    /*     Include code for OSQAccept()                             */
+N#define OS_Q_DEL_EN               1    /*     Include code for OSQDel()                                */
+N#define OS_Q_FLUSH_EN             1    /*     Include code for OSQFlush()                              */
+N#define OS_Q_PEND_ABORT_EN        1    /*     Include code for OSQPendAbort()                          */
+N#define OS_Q_POST_EN              1    /*     Include code for OSQPost()                               */
+N#define OS_Q_POST_FRONT_EN        1    /*     Include code for OSQPostFront()                          */
+N#define OS_Q_POST_OPT_EN          1    /*     Include code for OSQPostOpt()                            */
+N#define OS_Q_QUERY_EN             1    /*     Include code for OSQQuery()                              */
+N
+N
+N                                       /* ------------------------ SEMAPHORES ------------------------ */
+N#define OS_SEM_EN                 1    /* Enable (1) or Disable (0) code generation for SEMAPHORES     */
+N#define OS_SEM_ACCEPT_EN          1    /*    Include code for OSSemAccept()                            */
+N#define OS_SEM_DEL_EN             1    /*    Include code for OSSemDel()                               */
+N#define OS_SEM_PEND_ABORT_EN      1    /*    Include code for OSSemPendAbort()                         */
+N#define OS_SEM_QUERY_EN           1    /*    Include code for OSSemQuery()                             */
+N#define OS_SEM_SET_EN             1    /*    Include code for OSSemSet()                               */
+N
+N
+N                                       /* --------------------- TIME MANAGEMENT ---------------------- */
+N#define OS_TIME_DLY_HMSM_EN       1    /*     Include code for OSTimeDlyHMSM()                         */
+N#define OS_TIME_DLY_RESUME_EN     1    /*     Include code for OSTimeDlyResume()                       */
+N#define OS_TIME_GET_SET_EN        1    /*     Include code for OSTimeGet() and OSTimeSet()             */
+N#define OS_TIME_TICK_HOOK_EN      1    /*     Include code for OSTimeTickHook()                        */
+N
+N
+N                                       /* --------------------- TIMER MANAGEMENT --------------------- */
+N#define OS_TMR_EN                 0    /* Enable (1) or Disable (0) code generation for TIMERS         */
+N#define OS_TMR_CFG_MAX           16    /*     Maximum number of timers                                 */
+N#define OS_TMR_CFG_NAME_SIZE     16    /*     Determine the size of a timer name                       */
+N#define OS_TMR_CFG_WHEEL_SIZE     8    /*     Size of timer wheel (#Spokes)                            */
+N#define OS_TMR_CFG_TICKS_PER_SEC 10    /*     Rate at which timer management task runs (Hz)            */
+N
+N#endif
+L 46 ".\ucosii\source\ucos_ii.h" 2
+N#include <os_cpu.h>
+L 1 ".\ucosii\port\os_cpu.h" 1
+N/*
+N*********************************************************************************************************
+N*                                               uC/OS-II
+N*                                         The Real-Time Kernel
+N*
+N*
+N*                                (c) Copyright 2006, Micrium, Weston, FL
+N*                                          All Rights Reserved
+N*
+N*                                           ARM Cortex-M3 Port
+N*
+N* File      : OS_CPU.H
+N* Version   : V2.86
+N* By        : Jean J. Labrosse
+N*
+N* For       : ARMv7M Cortex-M3
+N* Mode      : Thumb2
+N* Toolchain : IAR EWARM
+N*********************************************************************************************************
+N*/
+N
+N#ifndef  OS_CPU_H
+N#define  OS_CPU_H
+N
+N
+N#ifdef   OS_CPU_GLOBALS
+N#define  OS_CPU_EXT
+N#else
+S#define  OS_CPU_EXT  extern
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                              DATA TYPES
+N*                                         (Compiler Specific)
+N*********************************************************************************************************
+N*/
+N
+Ntypedef unsigned char  BOOLEAN;
+Ntypedef unsigned char  INT8U;                    /* Unsigned  8 bit quantity                           */
+Ntypedef signed   char  INT8S;                    /* Signed    8 bit quantity                           */
+Ntypedef unsigned short INT16U;                   /* Unsigned 16 bit quantity                           */
+Ntypedef signed   short INT16S;                   /* Signed   16 bit quantity                           */
+Ntypedef unsigned int   INT32U;                   /* Unsigned 32 bit quantity                           */
+Ntypedef signed   int   INT32S;                   /* Signed   32 bit quantity                           */
+Ntypedef float          FP32;                     /* Single precision floating point                    */
+Ntypedef double         FP64;                     /* Double precision floating point                    */
+N
+Ntypedef unsigned int   OS_STK;                   /* Each stack entry is 32-bit wide                    */
+Ntypedef unsigned int   OS_CPU_SR;                /* Define size of CPU status register (PSR = 32 bits) */
+N
+N/*
+N*********************************************************************************************************
+N*                                              Cortex-M1
+N*                                      Critical Section Management
+N*
+N* Method #1:  Disable/Enable interrupts using simple instructions.  After critical section, interrupts
+N*             will be enabled even if they were disabled before entering the critical section.
+N*             NOT IMPLEMENTED
+N*
+N* Method #2:  Disable/Enable interrupts by preserving the state of interrupts.  In other words, if
+N*             interrupts were disabled before entering the critical section, they will be disabled when
+N*             leaving the critical section.
+N*             NOT IMPLEMENTED
+N*
+N* Method #3:  Disable/Enable interrupts by preserving the state of interrupts.  Generally speaking you
+N*             would store the state of the interrupt disable flag in the local variable 'cpu_sr' and then
+N*             disable interrupts.  'cpu_sr' is allocated in all of uC/OS-II's functions that need to
+N*             disable interrupts.  You would restore the interrupt disable state by copying back 'cpu_sr'
+N*             into the CPU's status register.
+N*********************************************************************************************************
+N*/
+N
+N#define  OS_CRITICAL_METHOD   3
+N
+N#if OS_CRITICAL_METHOD == 3
+X#if 3 == 3
+N#define  OS_ENTER_CRITICAL()  {cpu_sr = OS_CPU_SR_Save();}
+N#define  OS_EXIT_CRITICAL()   {OS_CPU_SR_Restore(cpu_sr);}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                        Cortex-M3 Miscellaneous
+N*********************************************************************************************************
+N*/
+N
+N#define  OS_STK_GROWTH        1                   /* Stack grows from HIGH to LOW memory on ARM        */
+N
+N#define  OS_TASK_SW()         OSCtxSw()
+N
+N/*
+N*********************************************************************************************************
+N*                                              PROTOTYPES
+N*********************************************************************************************************
+N*/
+N
+N#if OS_CRITICAL_METHOD == 3                       /* See OS_CPU_A.ASM                                  */
+X#if 3 == 3                        
+NOS_CPU_SR  OS_CPU_SR_Save(void);
+Nvoid       OS_CPU_SR_Restore(OS_CPU_SR cpu_sr);
+N#endif
+N
+Nvoid       OSCtxSw(void);
+Nvoid       OSIntCtxSw(void);
+Nvoid       OSStartHighRdy(void);
+N
+Nvoid       OS_CPU_PendSVHandler(void);
+N
+N                                                  /* See OS_CPU_C.C                                    */
+Nvoid       OS_CPU_SysTickHandler(void);
+Nvoid       OS_CPU_SysTickInit(void);
+N
+N                                                  /* See BSP.C                                         */
+NINT32U     OS_CPU_SysTickClkFreq(void);
+N#endif
+L 47 ".\ucosii\source\ucos_ii.h" 2
+N
+N/*
+N*********************************************************************************************************
+N*                                             MISCELLANEOUS
+N*********************************************************************************************************
+N*/
+N
+N#ifdef   OS_GLOBALS
+S#define  OS_EXT
+N#else
+N#define  OS_EXT  extern
+N#endif
+N
+N#ifndef  OS_FALSE
+N#define  OS_FALSE                     0u
+N#endif
+N
+N#ifndef  OS_TRUE
+N#define  OS_TRUE                      1u
+N#endif
+N
+N#define  OS_ASCII_NUL          (INT8U)0
+N
+N#define  OS_PRIO_SELF              0xFFu                /* Indicate SELF priority                      */
+N
+N#if OS_TASK_STAT_EN > 0
+X#if 1 > 0
+N#define  OS_N_SYS_TASKS               2u                /* Number of system tasks                      */
+N#else
+S#define  OS_N_SYS_TASKS               1u
+N#endif
+N
+N#define  OS_TASK_STAT_PRIO  (OS_LOWEST_PRIO - 1)        /* Statistic task priority                     */
+N#define  OS_TASK_IDLE_PRIO  (OS_LOWEST_PRIO)            /* IDLE      task priority                     */
+N
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+N#define  OS_EVENT_TBL_SIZE ((OS_LOWEST_PRIO) / 8 + 1)   /* Size of event table                         */
+N#define  OS_RDY_TBL_SIZE   ((OS_LOWEST_PRIO) / 8 + 1)   /* Size of ready table                         */
+N#else
+S#define  OS_EVENT_TBL_SIZE ((OS_LOWEST_PRIO) / 16 + 1)  /* Size of event table                         */
+S#define  OS_RDY_TBL_SIZE   ((OS_LOWEST_PRIO) / 16 + 1)  /* Size of ready table                         */
+N#endif
+N
+N#define  OS_TASK_IDLE_ID          65535u                /* ID numbers for Idle, Stat and Timer tasks   */
+N#define  OS_TASK_STAT_ID          65534u
+N#define  OS_TASK_TMR_ID           65533u
+N
+N#define  OS_EVENT_EN           (((OS_Q_EN > 0) && (OS_MAX_QS > 0)) || (OS_MBOX_EN > 0) || (OS_SEM_EN > 0) || (OS_MUTEX_EN > 0))
+N
+N#define  OS_TCB_RESERVED        ((OS_TCB *)1)
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                              TASK STATUS (Bit definition for OSTCBStat)
+N*********************************************************************************************************
+N*/
+N#define  OS_STAT_RDY               0x00u    /* Ready to run                                            */
+N#define  OS_STAT_SEM               0x01u    /* Pending on semaphore                                    */
+N#define  OS_STAT_MBOX              0x02u    /* Pending on mailbox                                      */
+N#define  OS_STAT_Q                 0x04u    /* Pending on queue                                        */
+N#define  OS_STAT_SUSPEND           0x08u    /* Task is suspended                                       */
+N#define  OS_STAT_MUTEX             0x10u    /* Pending on mutual exclusion semaphore                   */
+N#define  OS_STAT_FLAG              0x20u    /* Pending on event flag group                             */
+N#define  OS_STAT_MULTI             0x80u    /* Pending on multiple events                              */
+N
+N#define  OS_STAT_PEND_ANY         (OS_STAT_SEM | OS_STAT_MBOX | OS_STAT_Q | OS_STAT_MUTEX | OS_STAT_FLAG)
+N
+N/*
+N*********************************************************************************************************
+N*                           TASK PEND STATUS (Status codes for OSTCBStatPend)
+N*********************************************************************************************************
+N*/
+N#define  OS_STAT_PEND_OK              0u    /* Pending status OK, not pending, or pending complete     */
+N#define  OS_STAT_PEND_TO              1u    /* Pending timed out                                       */
+N#define  OS_STAT_PEND_ABORT           2u    /* Pending aborted                                         */
+N
+N/*
+N*********************************************************************************************************
+N*                                        OS_EVENT types
+N*********************************************************************************************************
+N*/
+N#define  OS_EVENT_TYPE_UNUSED         0u
+N#define  OS_EVENT_TYPE_MBOX           1u
+N#define  OS_EVENT_TYPE_Q              2u
+N#define  OS_EVENT_TYPE_SEM            3u
+N#define  OS_EVENT_TYPE_MUTEX          4u
+N#define  OS_EVENT_TYPE_FLAG           5u
+N
+N#define  OS_TMR_TYPE                100u    /* Used to identify Timers ...                             */
+N                                            /* ... (Must be different value than OS_EVENT_TYPE_xxx)    */
+N
+N/*
+N*********************************************************************************************************
+N*                                         EVENT FLAGS
+N*********************************************************************************************************
+N*/
+N#define  OS_FLAG_WAIT_CLR_ALL         0u    /* Wait for ALL    the bits specified to be CLR (i.e. 0)   */
+N#define  OS_FLAG_WAIT_CLR_AND         0u
+N
+N#define  OS_FLAG_WAIT_CLR_ANY         1u    /* Wait for ANY of the bits specified to be CLR (i.e. 0)   */
+N#define  OS_FLAG_WAIT_CLR_OR          1u
+N
+N#define  OS_FLAG_WAIT_SET_ALL         2u    /* Wait for ALL    the bits specified to be SET (i.e. 1)   */
+N#define  OS_FLAG_WAIT_SET_AND         2u
+N
+N#define  OS_FLAG_WAIT_SET_ANY         3u    /* Wait for ANY of the bits specified to be SET (i.e. 1)   */
+N#define  OS_FLAG_WAIT_SET_OR          3u
+N
+N
+N#define  OS_FLAG_CONSUME           0x80u    /* Consume the flags if condition(s) satisfied             */
+N
+N
+N#define  OS_FLAG_CLR                  0u
+N#define  OS_FLAG_SET                  1u
+N
+N/*
+N*********************************************************************************************************
+N*                                   Values for OSTickStepState
+N*
+N* Note(s): This feature is used by uC/OS-View.
+N*********************************************************************************************************
+N*/
+N
+N#if OS_TICK_STEP_EN > 0
+X#if 1 > 0
+N#define  OS_TICK_STEP_DIS             0u    /* Stepping is disabled, tick runs as mormal               */
+N#define  OS_TICK_STEP_WAIT            1u    /* Waiting for uC/OS-View to set OSTickStepState to _ONCE  */
+N#define  OS_TICK_STEP_ONCE            2u    /* Process tick once and wait for next cmd from uC/OS-View */
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*       Possible values for 'opt' argument of OSSemDel(), OSMboxDel(), OSQDel() and OSMutexDel()
+N*********************************************************************************************************
+N*/
+N#define  OS_DEL_NO_PEND               0u
+N#define  OS_DEL_ALWAYS                1u
+N
+N/*
+N*********************************************************************************************************
+N*                                        OS???Pend() OPTIONS
+N*
+N* These #defines are used to establish the options for OS???PendAbort().
+N*********************************************************************************************************
+N*/
+N#define  OS_PEND_OPT_NONE             0u    /* NO option selected                                      */
+N#define  OS_PEND_OPT_BROADCAST        1u    /* Broadcast action to ALL tasks waiting                   */
+N
+N/*
+N*********************************************************************************************************
+N*                                     OS???PostOpt() OPTIONS
+N*
+N* These #defines are used to establish the options for OSMboxPostOpt() and OSQPostOpt().
+N*********************************************************************************************************
+N*/
+N#define  OS_POST_OPT_NONE          0x00u    /* NO option selected                                      */
+N#define  OS_POST_OPT_BROADCAST     0x01u    /* Broadcast message to ALL tasks waiting                  */
+N#define  OS_POST_OPT_FRONT         0x02u    /* Post to highest priority task waiting                   */
+N#define  OS_POST_OPT_NO_SCHED      0x04u    /* Do not call the scheduler if this option is selected    */
+N
+N/*
+N*********************************************************************************************************
+N*                                 TASK OPTIONS (see OSTaskCreateExt())
+N*********************************************************************************************************
+N*/
+N#define  OS_TASK_OPT_NONE        0x0000u    /* NO option selected                                      */
+N#define  OS_TASK_OPT_STK_CHK     0x0001u    /* Enable stack checking for the task                      */
+N#define  OS_TASK_OPT_STK_CLR     0x0002u    /* Clear the stack when the task is create                 */
+N#define  OS_TASK_OPT_SAVE_FP     0x0004u    /* Save the contents of any floating-point registers       */
+N
+N/*
+N*********************************************************************************************************
+N*                            TIMER OPTIONS (see OSTmrStart() and OSTmrStop())
+N*********************************************************************************************************
+N*/
+N#define  OS_TMR_OPT_NONE              0u    /* No option selected                                      */
+N
+N#define  OS_TMR_OPT_ONE_SHOT          1u    /* Timer will not automatically restart when it expires    */
+N#define  OS_TMR_OPT_PERIODIC          2u    /* Timer will     automatically restart when it expires    */
+N
+N#define  OS_TMR_OPT_CALLBACK          3u    /* OSTmrStop() option to call 'callback' w/ timer arg.     */
+N#define  OS_TMR_OPT_CALLBACK_ARG      4u    /* OSTmrStop() option to call 'callback' w/ new   arg.     */
+N
+N/*
+N*********************************************************************************************************
+N*                                            TIMER STATES
+N*********************************************************************************************************
+N*/
+N#define  OS_TMR_STATE_UNUSED          0u
+N#define  OS_TMR_STATE_STOPPED         1u
+N#define  OS_TMR_STATE_COMPLETED       2u
+N#define  OS_TMR_STATE_RUNNING         3u
+N
+N/*
+N*********************************************************************************************************
+N*                                             ERROR CODES
+N*********************************************************************************************************
+N*/
+N#define OS_ERR_NONE                   0u
+N
+N#define OS_ERR_EVENT_TYPE             1u
+N#define OS_ERR_PEND_ISR               2u
+N#define OS_ERR_POST_NULL_PTR          3u
+N#define OS_ERR_PEVENT_NULL            4u
+N#define OS_ERR_POST_ISR               5u
+N#define OS_ERR_QUERY_ISR              6u
+N#define OS_ERR_INVALID_OPT            7u
+N#define OS_ERR_PDATA_NULL             9u
+N
+N#define OS_ERR_TIMEOUT               10u
+N#define OS_ERR_EVENT_NAME_TOO_LONG   11u
+N#define OS_ERR_PNAME_NULL            12u
+N#define OS_ERR_PEND_LOCKED           13u
+N#define OS_ERR_PEND_ABORT            14u
+N#define OS_ERR_DEL_ISR               15u
+N#define OS_ERR_CREATE_ISR            16u
+N#define OS_ERR_NAME_GET_ISR          17u
+N#define OS_ERR_NAME_SET_ISR          18u
+N
+N#define OS_ERR_MBOX_FULL             20u
+N
+N#define OS_ERR_Q_FULL                30u
+N#define OS_ERR_Q_EMPTY               31u
+N
+N#define OS_ERR_PRIO_EXIST            40u
+N#define OS_ERR_PRIO                  41u
+N#define OS_ERR_PRIO_INVALID          42u
+N
+N#define OS_ERR_SEM_OVF               50u
+N
+N#define OS_ERR_TASK_CREATE_ISR       60u
+N#define OS_ERR_TASK_DEL              61u
+N#define OS_ERR_TASK_DEL_IDLE         62u
+N#define OS_ERR_TASK_DEL_REQ          63u
+N#define OS_ERR_TASK_DEL_ISR          64u
+N#define OS_ERR_TASK_NAME_TOO_LONG    65u
+N#define OS_ERR_TASK_NO_MORE_TCB      66u
+N#define OS_ERR_TASK_NOT_EXIST        67u
+N#define OS_ERR_TASK_NOT_SUSPENDED    68u
+N#define OS_ERR_TASK_OPT              69u
+N#define OS_ERR_TASK_RESUME_PRIO      70u
+N#define OS_ERR_TASK_SUSPEND_IDLE     71u
+N#define OS_ERR_TASK_SUSPEND_PRIO     72u
+N#define OS_ERR_TASK_WAITING          73u
+N
+N#define OS_ERR_TIME_NOT_DLY          80u
+N#define OS_ERR_TIME_INVALID_MINUTES  81u
+N#define OS_ERR_TIME_INVALID_SECONDS  82u
+N#define OS_ERR_TIME_INVALID_MS       83u
+N#define OS_ERR_TIME_ZERO_DLY         84u
+N#define OS_ERR_TIME_DLY_ISR          85u
+N
+N#define OS_ERR_MEM_INVALID_PART      90u
+N#define OS_ERR_MEM_INVALID_BLKS      91u
+N#define OS_ERR_MEM_INVALID_SIZE      92u
+N#define OS_ERR_MEM_NO_FREE_BLKS      93u
+N#define OS_ERR_MEM_FULL              94u
+N#define OS_ERR_MEM_INVALID_PBLK      95u
+N#define OS_ERR_MEM_INVALID_PMEM      96u
+N#define OS_ERR_MEM_INVALID_PDATA     97u
+N#define OS_ERR_MEM_INVALID_ADDR      98u
+N#define OS_ERR_MEM_NAME_TOO_LONG     99u
+N
+N#define OS_ERR_NOT_MUTEX_OWNER      100u
+N
+N#define OS_ERR_FLAG_INVALID_PGRP    110u
+N#define OS_ERR_FLAG_WAIT_TYPE       111u
+N#define OS_ERR_FLAG_NOT_RDY         112u
+N#define OS_ERR_FLAG_INVALID_OPT     113u
+N#define OS_ERR_FLAG_GRP_DEPLETED    114u
+N#define OS_ERR_FLAG_NAME_TOO_LONG   115u
+N
+N#define OS_ERR_PIP_LOWER            120u
+N
+N#define OS_ERR_TMR_INVALID_DLY      130u
+N#define OS_ERR_TMR_INVALID_PERIOD   131u
+N#define OS_ERR_TMR_INVALID_OPT      132u
+N#define OS_ERR_TMR_INVALID_NAME     133u
+N#define OS_ERR_TMR_NON_AVAIL        134u
+N#define OS_ERR_TMR_INACTIVE         135u
+N#define OS_ERR_TMR_INVALID_DEST     136u
+N#define OS_ERR_TMR_INVALID_TYPE     137u
+N#define OS_ERR_TMR_INVALID          138u
+N#define OS_ERR_TMR_ISR              139u
+N#define OS_ERR_TMR_NAME_TOO_LONG    140u
+N#define OS_ERR_TMR_INVALID_STATE    141u
+N#define OS_ERR_TMR_STOPPED          142u
+N#define OS_ERR_TMR_NO_CALLBACK      143u
+N
+N/*
+N*********************************************************************************************************
+N*                                    OLD ERROR CODE NAMES (< V2.84)
+N*********************************************************************************************************
+N*/
+N#define OS_NO_ERR                    OS_ERR_NONE
+N#define OS_TIMEOUT                   OS_ERR_TIMEOUT
+N#define OS_TASK_NOT_EXIST            OS_ERR_TASK_NOT_EXIST
+N#define OS_MBOX_FULL                 OS_ERR_MBOX_FULL
+N#define OS_Q_FULL                    OS_ERR_Q_FULL
+N#define OS_Q_EMPTY                   OS_ERR_Q_EMPTY
+N#define OS_PRIO_EXIST                OS_ERR_PRIO_EXIST
+N#define OS_PRIO_ERR                  OS_ERR_PRIO
+N#define OS_PRIO_INVALID              OS_ERR_PRIO_INVALID
+N#define OS_SEM_OVF                   OS_ERR_SEM_OVF
+N#define OS_TASK_DEL_ERR              OS_ERR_TASK_DEL
+N#define OS_TASK_DEL_IDLE             OS_ERR_TASK_DEL_IDLE
+N#define OS_TASK_DEL_REQ              OS_ERR_TASK_DEL_REQ
+N#define OS_TASK_DEL_ISR              OS_ERR_TASK_DEL_ISR
+N#define OS_NO_MORE_TCB               OS_ERR_TASK_NO_MORE_TCB
+N#define OS_TIME_NOT_DLY              OS_ERR_TIME_NOT_DLY
+N#define OS_TIME_INVALID_MINUTES      OS_ERR_TIME_INVALID_MINUTES
+N#define OS_TIME_INVALID_SECONDS      OS_ERR_TIME_INVALID_SECONDS
+N#define OS_TIME_INVALID_MS           OS_ERR_TIME_INVALID_MS
+N#define OS_TIME_ZERO_DLY             OS_ERR_TIME_ZERO_DLY
+N#define OS_TASK_SUSPEND_PRIO         OS_ERR_TASK_SUSPEND_PRIO
+N#define OS_TASK_SUSPEND_IDLE         OS_ERR_TASK_SUSPEND_IDLE
+N#define OS_TASK_RESUME_PRIO          OS_ERR_TASK_RESUME_PRIO
+N#define OS_TASK_NOT_SUSPENDED        OS_ERR_TASK_NOT_SUSPENDED
+N#define OS_MEM_INVALID_PART          OS_ERR_MEM_INVALID_PART
+N#define OS_MEM_INVALID_BLKS          OS_ERR_MEM_INVALID_BLKS
+N#define OS_MEM_INVALID_SIZE          OS_ERR_MEM_INVALID_SIZE
+N#define OS_MEM_NO_FREE_BLKS          OS_ERR_MEM_NO_FREE_BLKS
+N#define OS_MEM_FULL                  OS_ERR_MEM_FULL
+N#define OS_MEM_INVALID_PBLK          OS_ERR_MEM_INVALID_PBLK
+N#define OS_MEM_INVALID_PMEM          OS_ERR_MEM_INVALID_PMEM
+N#define OS_MEM_INVALID_PDATA         OS_ERR_MEM_INVALID_PDATA
+N#define OS_MEM_INVALID_ADDR          OS_ERR_MEM_INVALID_ADDR
+N#define OS_MEM_NAME_TOO_LONG         OS_ERR_MEM_NAME_TOO_LONG
+N#define OS_TASK_OPT_ERR              OS_ERR_TASK_OPT
+N#define OS_FLAG_INVALID_PGRP         OS_ERR_FLAG_INVALID_PGRP
+N#define OS_FLAG_ERR_WAIT_TYPE        OS_ERR_FLAG_WAIT_TYPE
+N#define OS_FLAG_ERR_NOT_RDY          OS_ERR_FLAG_NOT_RDY
+N#define OS_FLAG_INVALID_OPT          OS_ERR_FLAG_INVALID_OPT
+N#define OS_FLAG_GRP_DEPLETED         OS_ERR_FLAG_GRP_DEPLETED
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          EVENT CONTROL BLOCK
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0))) && (10 > 0)
+Ntypedef struct os_event {
+N    INT8U    OSEventType;                    /* Type of event control block (see OS_EVENT_TYPE_xxxx)    */
+N    void    *OSEventPtr;                     /* Pointer to message or queue structure                   */
+N    INT16U   OSEventCnt;                     /* Semaphore Count (not used if other EVENT type)          */
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+N    INT8U    OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+N    INT8U    OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+X    INT8U    OSEventTbl[((31) / 8 + 1)];   
+N#else
+S    INT16U   OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+S    INT16U   OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+N#endif
+N
+N#if OS_EVENT_NAME_SIZE > 1
+X#if 16 > 1
+N    INT8U    OSEventName[OS_EVENT_NAME_SIZE];
+X    INT8U    OSEventName[16];
+N#endif
+N} OS_EVENT;
+N#endif
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                       EVENT FLAGS CONTROL BLOCK
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_FLAG_EN > 0) && (OS_MAX_FLAGS > 0)
+X#if (1 > 0) && (5 > 0)
+N
+N#if OS_FLAGS_NBITS == 8                     /* Determine the size of OS_FLAGS (8, 16 or 32 bits)       */
+X#if 16 == 8                      
+Stypedef  INT8U    OS_FLAGS;
+N#endif
+N
+N#if OS_FLAGS_NBITS == 16
+X#if 16 == 16
+Ntypedef  INT16U   OS_FLAGS;
+N#endif
+N
+N#if OS_FLAGS_NBITS == 32
+X#if 16 == 32
+Stypedef  INT32U   OS_FLAGS;
+N#endif
+N
+N
+Ntypedef struct os_flag_grp {                /* Event Flag Group                                        */
+N    INT8U         OSFlagType;               /* Should be set to OS_EVENT_TYPE_FLAG                     */
+N    void         *OSFlagWaitList;           /* Pointer to first NODE of task waiting on event flag     */
+N    OS_FLAGS      OSFlagFlags;              /* 8, 16 or 32 bit flags                                   */
+N#if OS_FLAG_NAME_SIZE > 1
+X#if 16 > 1
+N    INT8U         OSFlagName[OS_FLAG_NAME_SIZE];
+X    INT8U         OSFlagName[16];
+N#endif
+N} OS_FLAG_GRP;
+N
+N
+N
+Ntypedef struct os_flag_node {               /* Event Flag Wait List Node                               */
+N    void         *OSFlagNodeNext;           /* Pointer to next     NODE in wait list                   */
+N    void         *OSFlagNodePrev;           /* Pointer to previous NODE in wait list                   */
+N    void         *OSFlagNodeTCB;            /* Pointer to TCB of waiting task                          */
+N    void         *OSFlagNodeFlagGrp;        /* Pointer to Event Flag Group                             */
+N    OS_FLAGS      OSFlagNodeFlags;          /* Event flag to wait on                                   */
+N    INT8U         OSFlagNodeWaitType;       /* Type of wait:                                           */
+N                                            /*      OS_FLAG_WAIT_AND                                   */
+N                                            /*      OS_FLAG_WAIT_ALL                                   */
+N                                            /*      OS_FLAG_WAIT_OR                                    */
+N                                            /*      OS_FLAG_WAIT_ANY                                   */
+N} OS_FLAG_NODE;
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          MESSAGE MAILBOX DATA
+N*********************************************************************************************************
+N*/
+N
+N#if OS_MBOX_EN > 0
+X#if 1 > 0
+Ntypedef struct os_mbox_data {
+N    void   *OSMsg;                         /* Pointer to message in mailbox                            */
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+N    INT8U   OSEventTbl[OS_EVENT_TBL_SIZE]; /* List of tasks waiting for event to occur                 */
+X    INT8U   OSEventTbl[((31) / 8 + 1)];  
+N    INT8U   OSEventGrp;                    /* Group corresponding to tasks waiting for event to occur  */
+N#else
+S    INT16U  OSEventTbl[OS_EVENT_TBL_SIZE]; /* List of tasks waiting for event to occur                 */
+S    INT16U  OSEventGrp;                    /* Group corresponding to tasks waiting for event to occur  */
+N#endif
+N} OS_MBOX_DATA;
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                     MEMORY PARTITION DATA STRUCTURES
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_MEM_EN > 0) && (OS_MAX_MEM_PART > 0)
+X#if (0 > 0) && (5 > 0)
+Stypedef struct os_mem {                   /* MEMORY CONTROL BLOCK                                      */
+S    void   *OSMemAddr;                    /* Pointer to beginning of memory partition                  */
+S    void   *OSMemFreeList;                /* Pointer to list of free memory blocks                     */
+S    INT32U  OSMemBlkSize;                 /* Size (in bytes) of each block of memory                   */
+S    INT32U  OSMemNBlks;                   /* Total number of blocks in this partition                  */
+S    INT32U  OSMemNFree;                   /* Number of memory blocks remaining in this partition       */
+S#if OS_MEM_NAME_SIZE > 1
+S    INT8U   OSMemName[OS_MEM_NAME_SIZE];  /* Memory partition name                                     */
+S#endif
+S} OS_MEM;
+S
+S
+Stypedef struct os_mem_data {
+S    void   *OSAddr;                    /* Pointer to the beginning address of the memory partition     */
+S    void   *OSFreeList;                /* Pointer to the beginning of the free list of memory blocks   */
+S    INT32U  OSBlkSize;                 /* Size (in bytes) of each memory block                         */
+S    INT32U  OSNBlks;                   /* Total number of blocks in the partition                      */
+S    INT32U  OSNFree;                   /* Number of memory blocks free                                 */
+S    INT32U  OSNUsed;                   /* Number of memory blocks used                                 */
+S} OS_MEM_DATA;
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                    MUTUAL EXCLUSION SEMAPHORE DATA
+N*********************************************************************************************************
+N*/
+N
+N#if OS_MUTEX_EN > 0
+X#if 0 > 0
+Stypedef struct os_mutex_data {
+S#if OS_LOWEST_PRIO <= 63
+S    INT8U   OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+S    INT8U   OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+S#else
+S    INT16U  OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+S    INT16U  OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+S#endif
+S    BOOLEAN OSValue;                        /* Mutex value (OS_FALSE = used, OS_TRUE = available)      */
+S    INT8U   OSOwnerPrio;                    /* Mutex owner's task priority or 0xFF if no owner         */
+S    INT8U   OSMutexPIP;                     /* Priority Inheritance Priority or 0xFF if no owner       */
+S} OS_MUTEX_DATA;
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                          MESSAGE QUEUE DATA
+N*********************************************************************************************************
+N*/
+N
+N#if OS_Q_EN > 0
+X#if 0 > 0
+Stypedef struct os_q {                   /* QUEUE CONTROL BLOCK                                         */
+S    struct os_q   *OSQPtr;              /* Link to next queue control block in list of free blocks     */
+S    void         **OSQStart;            /* Pointer to start of queue data                              */
+S    void         **OSQEnd;              /* Pointer to end   of queue data                              */
+S    void         **OSQIn;               /* Pointer to where next message will be inserted  in   the Q  */
+S    void         **OSQOut;              /* Pointer to where next message will be extracted from the Q  */
+S    INT16U         OSQSize;             /* Size of queue (maximum number of entries)                   */
+S    INT16U         OSQEntries;          /* Current number of entries in the queue                      */
+S} OS_Q;
+S
+S
+Stypedef struct os_q_data {
+S    void          *OSMsg;               /* Pointer to next message to be extracted from queue          */
+S    INT16U         OSNMsgs;             /* Number of messages in message queue                         */
+S    INT16U         OSQSize;             /* Size of message queue                                       */
+S#if OS_LOWEST_PRIO <= 63
+S    INT8U          OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur         */
+S    INT8U          OSEventGrp;          /* Group corresponding to tasks waiting for event to occur     */
+S#else
+S    INT16U         OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur         */
+S    INT16U         OSEventGrp;          /* Group corresponding to tasks waiting for event to occur     */
+S#endif
+S} OS_Q_DATA;
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           SEMAPHORE DATA
+N*********************************************************************************************************
+N*/
+N
+N#if OS_SEM_EN > 0
+X#if 1 > 0
+Ntypedef struct os_sem_data {
+N    INT16U  OSCnt;                          /* Semaphore count                                         */
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+N    INT8U   OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+X    INT8U   OSEventTbl[((31) / 8 + 1)];   
+N    INT8U   OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+N#else
+S    INT16U  OSEventTbl[OS_EVENT_TBL_SIZE];  /* List of tasks waiting for event to occur                */
+S    INT16U  OSEventGrp;                     /* Group corresponding to tasks waiting for event to occur */
+N#endif
+N} OS_SEM_DATA;
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                            TASK STACK DATA
+N*********************************************************************************************************
+N*/
+N
+N#if OS_TASK_CREATE_EXT_EN > 0
+X#if 1 > 0
+Ntypedef struct os_stk_data {
+N    INT32U  OSFree;                    /* Number of free bytes on the stack                            */
+N    INT32U  OSUsed;                    /* Number of bytes used on the stack                            */
+N} OS_STK_DATA;
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          TASK CONTROL BLOCK
+N*********************************************************************************************************
+N*/
+N
+Ntypedef struct os_tcb {
+N    OS_STK          *OSTCBStkPtr;           /* Pointer to current top of stack                         */
+N
+N#if OS_TASK_CREATE_EXT_EN > 0
+X#if 1 > 0
+N    void            *OSTCBExtPtr;           /* Pointer to user definable data for TCB extension        */
+N    OS_STK          *OSTCBStkBottom;        /* Pointer to bottom of stack                              */
+N    INT32U           OSTCBStkSize;          /* Size of task stack (in number of stack elements)        */
+N    INT16U           OSTCBOpt;              /* Task options as passed by OSTaskCreateExt()             */
+N    INT16U           OSTCBId;               /* Task ID (0..65535)                                      */
+N#endif
+N
+N    struct os_tcb   *OSTCBNext;             /* Pointer to next     TCB in the TCB list                 */
+N    struct os_tcb   *OSTCBPrev;             /* Pointer to previous TCB in the TCB list                 */
+N
+N#if (OS_EVENT_EN) || (OS_FLAG_EN > 0)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0))) || (1 > 0)
+N    OS_EVENT        *OSTCBEventPtr;         /* Pointer to          event control block                 */
+N#endif
+N
+N#if (OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0))) && (1 > 0)
+N    OS_EVENT       **OSTCBEventMultiPtr;    /* Pointer to multiple event control blocks                */
+N#endif
+N
+N#if ((OS_Q_EN > 0) && (OS_MAX_QS > 0)) || (OS_MBOX_EN > 0)
+X#if ((0 > 0) && (4 > 0)) || (1 > 0)
+N    void            *OSTCBMsg;              /* Message received from OSMboxPost() or OSQPost()         */
+N#endif
+N
+N#if (OS_FLAG_EN > 0) && (OS_MAX_FLAGS > 0)
+X#if (1 > 0) && (5 > 0)
+N#if OS_TASK_DEL_EN > 0
+X#if 1 > 0
+N    OS_FLAG_NODE    *OSTCBFlagNode;         /* Pointer to event flag node                              */
+N#endif
+N    OS_FLAGS         OSTCBFlagsRdy;         /* Event flags that made task ready to run                 */
+N#endif
+N
+N    INT16U           OSTCBDly;              /* Nbr ticks to delay task or, timeout waiting for event   */
+N    INT8U            OSTCBStat;             /* Task      status                                        */
+N    INT8U            OSTCBStatPend;         /* Task PEND status                                        */
+N    INT8U            OSTCBPrio;             /* Task priority (0 == highest)                            */
+N
+N    INT8U            OSTCBX;                /* Bit position in group  corresponding to task priority   */
+N    INT8U            OSTCBY;                /* Index into ready table corresponding to task priority   */
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+N    INT8U            OSTCBBitX;             /* Bit mask to access bit position in ready table          */
+N    INT8U            OSTCBBitY;             /* Bit mask to access bit position in ready group          */
+N#else
+S    INT16U           OSTCBBitX;             /* Bit mask to access bit position in ready table          */
+S    INT16U           OSTCBBitY;             /* Bit mask to access bit position in ready group          */
+N#endif
+N
+N#if OS_TASK_DEL_EN > 0
+X#if 1 > 0
+N    INT8U            OSTCBDelReq;           /* Indicates whether a task needs to delete itself         */
+N#endif
+N
+N#if OS_TASK_PROFILE_EN > 0
+X#if 1 > 0
+N    INT32U           OSTCBCtxSwCtr;         /* Number of time the task was switched in                 */
+N    INT32U           OSTCBCyclesTot;        /* Total number of clock cycles the task has been running  */
+N    INT32U           OSTCBCyclesStart;      /* Snapshot of cycle counter at start of task resumption   */
+N    OS_STK          *OSTCBStkBase;          /* Pointer to the beginning of the task stack              */
+N    INT32U           OSTCBStkUsed;          /* Number of bytes used from the stack                     */
+N#endif
+N
+N#if OS_TASK_NAME_SIZE > 1
+X#if 16 > 1
+N    INT8U            OSTCBTaskName[OS_TASK_NAME_SIZE];
+X    INT8U            OSTCBTaskName[16];
+N#endif
+N} OS_TCB;
+N
+N/*$PAGE*/
+N/*
+N************************************************************************************************************************
+N*                                                   TIMER DATA TYPES
+N************************************************************************************************************************
+N*/
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+Stypedef  void (*OS_TMR_CALLBACK)(void *ptmr, void *parg);
+S
+S
+S
+Stypedef  struct  os_tmr {
+S    INT8U            OSTmrType;                       /* Should be set to OS_TMR_TYPE                                  */
+S    OS_TMR_CALLBACK  OSTmrCallback;                   /* Function to call when timer expires                           */
+S    void            *OSTmrCallbackArg;                /* Argument to pass to function when timer expires               */
+S    void            *OSTmrNext;                       /* Double link list pointers                                     */
+S    void            *OSTmrPrev;
+S    INT32U           OSTmrMatch;                      /* Timer expires when OSTmrTime == OSTmrMatch                    */
+S    INT32U           OSTmrDly;                        /* Delay time before periodic update starts                      */
+S    INT32U           OSTmrPeriod;                     /* Period to repeat timer                                        */
+S#if OS_TMR_CFG_NAME_SIZE > 0
+S    INT8U            OSTmrName[OS_TMR_CFG_NAME_SIZE]; /* Name to give the timer                                        */
+S#endif
+S    INT8U            OSTmrOpt;                        /* Options (see OS_TMR_OPT_xxx)                                  */
+S    INT8U            OSTmrState;                      /* Indicates the state of the timer:                             */
+S                                                      /*     OS_TMR_STATE_UNUSED                                       */
+S                                                      /*     OS_TMR_STATE_RUNNING                                      */
+S                                                      /*     OS_TMR_STATE_STOPPED                                      */
+S} OS_TMR;
+S
+S
+S
+Stypedef  struct  os_tmr_wheel {
+S    OS_TMR          *OSTmrFirst;                      /* Pointer to first timer in linked list                         */
+S    INT16U           OSTmrEntries;
+S} OS_TMR_WHEEL;
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                            GLOBAL VARIABLES
+N*********************************************************************************************************
+N*/
+N
+NOS_EXT  INT32U            OSCtxSwCtr;               /* Counter of number of context switches           */
+Xextern  INT32U            OSCtxSwCtr;                
+N
+N#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0))) && (10 > 0)
+NOS_EXT  OS_EVENT         *OSEventFreeList;          /* Pointer to list of free EVENT control blocks    */
+Xextern  OS_EVENT         *OSEventFreeList;           
+NOS_EXT  OS_EVENT          OSEventTbl[OS_MAX_EVENTS];/* Table of EVENT control blocks                   */
+Xextern  OS_EVENT          OSEventTbl[10]; 
+N#endif
+N
+N#if (OS_FLAG_EN > 0) && (OS_MAX_FLAGS > 0)
+X#if (1 > 0) && (5 > 0)
+NOS_EXT  OS_FLAG_GRP       OSFlagTbl[OS_MAX_FLAGS];  /* Table containing event flag groups              */
+Xextern  OS_FLAG_GRP       OSFlagTbl[5];   
+NOS_EXT  OS_FLAG_GRP      *OSFlagFreeList;           /* Pointer to free list of event flag groups       */
+Xextern  OS_FLAG_GRP      *OSFlagFreeList;            
+N#endif
+N
+N#if OS_TASK_STAT_EN > 0
+X#if 1 > 0
+NOS_EXT  INT8U             OSCPUUsage;               /* Percentage of CPU used                          */
+Xextern  INT8U             OSCPUUsage;                
+NOS_EXT  INT32U            OSIdleCtrMax;             /* Max. value that idle ctr can take in 1 sec.     */
+Xextern  INT32U            OSIdleCtrMax;              
+NOS_EXT  INT32U            OSIdleCtrRun;             /* Val. reached by idle ctr at run time in 1 sec.  */
+Xextern  INT32U            OSIdleCtrRun;              
+NOS_EXT  BOOLEAN           OSStatRdy;                /* Flag indicating that the statistic task is rdy  */
+Xextern  BOOLEAN           OSStatRdy;                 
+NOS_EXT  OS_STK            OSTaskStatStk[OS_TASK_STAT_STK_SIZE];      /* Statistics task stack          */
+Xextern  OS_STK            OSTaskStatStk[128];       
+N#endif
+N
+NOS_EXT  INT8U             OSIntNesting;             /* Interrupt nesting level                         */
+Xextern  INT8U             OSIntNesting;              
+N
+NOS_EXT  INT8U             OSLockNesting;            /* Multitasking lock nesting level                 */
+Xextern  INT8U             OSLockNesting;             
+N
+NOS_EXT  INT8U             OSPrioCur;                /* Priority of current task                        */
+Xextern  INT8U             OSPrioCur;                 
+NOS_EXT  INT8U             OSPrioHighRdy;            /* Priority of highest priority task               */
+Xextern  INT8U             OSPrioHighRdy;             
+N
+N#if OS_LOWEST_PRIO <= 63
+X#if 31 <= 63
+NOS_EXT  INT8U             OSRdyGrp;                        /* Ready list group                         */
+Xextern  INT8U             OSRdyGrp;                         
+NOS_EXT  INT8U             OSRdyTbl[OS_RDY_TBL_SIZE];       /* Table of tasks which are ready to run    */
+Xextern  INT8U             OSRdyTbl[((31) / 8 + 1)];        
+N#else
+SOS_EXT  INT16U            OSRdyGrp;                        /* Ready list group                         */
+SOS_EXT  INT16U            OSRdyTbl[OS_RDY_TBL_SIZE];       /* Table of tasks which are ready to run    */
+N#endif
+N
+NOS_EXT  BOOLEAN           OSRunning;                       /* Flag indicating that kernel is running   */
+Xextern  BOOLEAN           OSRunning;                        
+N
+NOS_EXT  INT8U             OSTaskCtr;                       /* Number of tasks created                  */
+Xextern  INT8U             OSTaskCtr;                        
+N
+NOS_EXT  volatile  INT32U  OSIdleCtr;                                 /* Idle counter                   */
+Xextern  volatile  INT32U  OSIdleCtr;                                  
+N
+NOS_EXT  OS_STK            OSTaskIdleStk[OS_TASK_IDLE_STK_SIZE];      /* Idle task stack                */
+Xextern  OS_STK            OSTaskIdleStk[128];       
+N
+N
+NOS_EXT  OS_TCB           *OSTCBCur;                        /* Pointer to currently running TCB         */
+Xextern  OS_TCB           *OSTCBCur;                         
+NOS_EXT  OS_TCB           *OSTCBFreeList;                   /* Pointer to list of free TCBs             */
+Xextern  OS_TCB           *OSTCBFreeList;                    
+NOS_EXT  OS_TCB           *OSTCBHighRdy;                    /* Pointer to highest priority TCB R-to-R   */
+Xextern  OS_TCB           *OSTCBHighRdy;                     
+NOS_EXT  OS_TCB           *OSTCBList;                       /* Pointer to doubly linked list of TCBs    */
+Xextern  OS_TCB           *OSTCBList;                        
+NOS_EXT  OS_TCB           *OSTCBPrioTbl[OS_LOWEST_PRIO + 1];/* Table of pointers to created TCBs        */
+Xextern  OS_TCB           *OSTCBPrioTbl[31 + 1]; 
+NOS_EXT  OS_TCB            OSTCBTbl[OS_MAX_TASKS + OS_N_SYS_TASKS];   /* Table of TCBs                  */
+Xextern  OS_TCB            OSTCBTbl[20 + 2u];    
+N
+N#if OS_TICK_STEP_EN > 0
+X#if 1 > 0
+NOS_EXT  INT8U             OSTickStepState;          /* Indicates the state of the tick step feature    */
+Xextern  INT8U             OSTickStepState;           
+N#endif
+N
+N#if (OS_MEM_EN > 0) && (OS_MAX_MEM_PART > 0)
+X#if (0 > 0) && (5 > 0)
+SOS_EXT  OS_MEM           *OSMemFreeList;            /* Pointer to free list of memory partitions       */
+SOS_EXT  OS_MEM            OSMemTbl[OS_MAX_MEM_PART];/* Storage for memory partition manager            */
+N#endif
+N
+N#if (OS_Q_EN > 0) && (OS_MAX_QS > 0)
+X#if (0 > 0) && (4 > 0)
+SOS_EXT  OS_Q             *OSQFreeList;              /* Pointer to list of free QUEUE control blocks    */
+SOS_EXT  OS_Q              OSQTbl[OS_MAX_QS];        /* Table of QUEUE control blocks                   */
+N#endif
+N
+N#if OS_TIME_GET_SET_EN > 0
+X#if 1 > 0
+NOS_EXT  volatile  INT32U  OSTime;                   /* Current value of system time (in ticks)         */
+Xextern  volatile  INT32U  OSTime;                    
+N#endif
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+SOS_EXT  INT16U            OSTmrFree;                /* Number of free entries in the timer pool        */
+SOS_EXT  INT16U            OSTmrUsed;                /* Number of timers used                           */
+SOS_EXT  INT32U            OSTmrTime;                /* Current timer time                              */
+S
+SOS_EXT  OS_EVENT         *OSTmrSem;                 /* Sem. used to gain exclusive access to timers    */
+SOS_EXT  OS_EVENT         *OSTmrSemSignal;           /* Sem. used to signal the update of timers        */
+S
+SOS_EXT  OS_TMR            OSTmrTbl[OS_TMR_CFG_MAX]; /* Table containing pool of timers                 */
+SOS_EXT  OS_TMR           *OSTmrFreeList;            /* Pointer to free list of timers                  */
+SOS_EXT  OS_STK            OSTmrTaskStk[OS_TASK_TMR_STK_SIZE];
+S
+SOS_EXT  OS_TMR_WHEEL      OSTmrWheelTbl[OS_TMR_CFG_WHEEL_SIZE];
+N#endif
+N
+Nextern  INT8U   const     OSUnMapTbl[256];          /* Priority->Index    lookup table                 */
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          FUNCTION PROTOTYPES
+N*                                     (Target Independent Functions)
+N*********************************************************************************************************
+N*/
+N
+N/*
+N*********************************************************************************************************
+N*                                            MISCELLANEOUS
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_EVENT_EN)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0)))
+N
+N#if (OS_EVENT_NAME_SIZE > 1)
+X#if (16 > 1)
+NINT8U         OSEventNameGet          (OS_EVENT        *pevent,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N
+Nvoid          OSEventNameSet          (OS_EVENT        *pevent,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N#endif
+N
+N#if (OS_EVENT_MULTI_EN > 0)
+X#if (1 > 0)
+NINT16U        OSEventPendMulti        (OS_EVENT       **pevents_pend,
+N                                       OS_EVENT       **pevents_rdy,
+N                                       void           **pmsgs_rdy,
+N                                       INT16U           timeout,
+N                                       INT8U           *perr);
+N#endif
+N
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                         EVENT FLAGS MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_FLAG_EN > 0) && (OS_MAX_FLAGS > 0)
+X#if (1 > 0) && (5 > 0)
+N
+N#if OS_FLAG_ACCEPT_EN > 0
+X#if 1 > 0
+NOS_FLAGS      OSFlagAccept            (OS_FLAG_GRP     *pgrp,
+N                                       OS_FLAGS         flags,
+N                                       INT8U            wait_type,
+N                                       INT8U           *perr);
+N#endif
+N
+NOS_FLAG_GRP  *OSFlagCreate            (OS_FLAGS         flags,
+N                                      INT8U            *perr);
+N
+N#if OS_FLAG_DEL_EN > 0
+X#if 1 > 0
+NOS_FLAG_GRP  *OSFlagDel               (OS_FLAG_GRP     *pgrp,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N#endif
+N
+N#if (OS_FLAG_EN > 0) && (OS_FLAG_NAME_SIZE > 1)
+X#if (1 > 0) && (16 > 1)
+NINT8U         OSFlagNameGet           (OS_FLAG_GRP     *pgrp,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N
+Nvoid          OSFlagNameSet           (OS_FLAG_GRP     *pgrp,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N#endif
+N
+NOS_FLAGS      OSFlagPend              (OS_FLAG_GRP     *pgrp,
+N                                       OS_FLAGS         flags,
+N                                       INT8U            wait_type,
+N                                       INT16U           timeout,
+N                                       INT8U           *perr);
+N
+NOS_FLAGS      OSFlagPendGetFlagsRdy   (void);
+NOS_FLAGS      OSFlagPost              (OS_FLAG_GRP     *pgrp,
+N                                       OS_FLAGS         flags,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N
+N#if OS_FLAG_QUERY_EN > 0
+X#if 1 > 0
+NOS_FLAGS      OSFlagQuery             (OS_FLAG_GRP     *pgrp,
+N                                       INT8U           *perr);
+N#endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                        MESSAGE MAILBOX MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if OS_MBOX_EN > 0
+X#if 1 > 0
+N
+N#if OS_MBOX_ACCEPT_EN > 0
+X#if 1 > 0
+Nvoid         *OSMboxAccept            (OS_EVENT        *pevent);
+N#endif
+N
+NOS_EVENT     *OSMboxCreate            (void            *pmsg);
+N
+N#if OS_MBOX_DEL_EN > 0
+X#if 1 > 0
+NOS_EVENT     *OSMboxDel               (OS_EVENT        *pevent,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N#endif
+N
+Nvoid         *OSMboxPend              (OS_EVENT        *pevent,
+N                                       INT16U           timeout,
+N                                       INT8U           *perr);
+N
+N#if OS_MBOX_PEND_ABORT_EN > 0
+X#if 1 > 0
+NINT8U         OSMboxPendAbort         (OS_EVENT        *pevent,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N#endif
+N
+N#if OS_MBOX_POST_EN > 0
+X#if 1 > 0
+NINT8U         OSMboxPost              (OS_EVENT        *pevent,
+N                                       void            *pmsg);
+N#endif
+N
+N#if OS_MBOX_POST_OPT_EN > 0
+X#if 1 > 0
+NINT8U         OSMboxPostOpt           (OS_EVENT        *pevent,
+N                                       void            *pmsg,
+N                                       INT8U            opt);
+N#endif
+N
+N#if OS_MBOX_QUERY_EN > 0
+X#if 1 > 0
+NINT8U         OSMboxQuery             (OS_EVENT        *pevent,
+N                                       OS_MBOX_DATA    *p_mbox_data);
+N#endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           MEMORY MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_MEM_EN > 0) && (OS_MAX_MEM_PART > 0)
+X#if (0 > 0) && (5 > 0)
+S
+SOS_MEM       *OSMemCreate             (void            *addr,
+S                                       INT32U           nblks,
+S                                       INT32U           blksize,
+S                                       INT8U           *perr);
+S
+Svoid         *OSMemGet                (OS_MEM          *pmem,
+S                                       INT8U           *perr);
+S#if OS_MEM_NAME_SIZE > 1
+SINT8U         OSMemNameGet            (OS_MEM          *pmem,
+S                                       INT8U           *pname,
+S                                       INT8U           *perr);
+S
+Svoid          OSMemNameSet            (OS_MEM          *pmem,
+S                                       INT8U           *pname,
+S                                       INT8U           *perr);
+S#endif
+SINT8U         OSMemPut                (OS_MEM          *pmem,
+S                                       void            *pblk);
+S
+S#if OS_MEM_QUERY_EN > 0
+SINT8U         OSMemQuery              (OS_MEM          *pmem,
+S                                       OS_MEM_DATA     *p_mem_data);
+S#endif
+S
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                MUTUAL EXCLUSION SEMAPHORE MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if OS_MUTEX_EN > 0
+X#if 0 > 0
+S
+S#if OS_MUTEX_ACCEPT_EN > 0
+SBOOLEAN       OSMutexAccept           (OS_EVENT        *pevent,
+S                                       INT8U           *perr);
+S#endif
+S
+SOS_EVENT     *OSMutexCreate           (INT8U            prio,
+S                                       INT8U           *perr);
+S
+S#if OS_MUTEX_DEL_EN > 0
+SOS_EVENT     *OSMutexDel              (OS_EVENT        *pevent,
+S                                       INT8U            opt,
+S                                       INT8U           *perr);
+S#endif
+S
+Svoid          OSMutexPend             (OS_EVENT        *pevent,
+S                                       INT16U           timeout,
+S                                       INT8U           *perr);
+S
+SINT8U         OSMutexPost             (OS_EVENT        *pevent);
+S
+S#if OS_MUTEX_QUERY_EN > 0
+SINT8U         OSMutexQuery            (OS_EVENT        *pevent,
+S                                       OS_MUTEX_DATA   *p_mutex_data);
+S#endif
+S
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                         MESSAGE QUEUE MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if (OS_Q_EN > 0) && (OS_MAX_QS > 0)
+X#if (0 > 0) && (4 > 0)
+S
+S#if OS_Q_ACCEPT_EN > 0
+Svoid         *OSQAccept               (OS_EVENT        *pevent,
+S                                       INT8U           *perr);
+S#endif
+S
+SOS_EVENT     *OSQCreate               (void           **start,
+S                                       INT16U           size);
+S
+S#if OS_Q_DEL_EN > 0
+SOS_EVENT     *OSQDel                  (OS_EVENT        *pevent,
+S                                       INT8U            opt,
+S                                       INT8U           *perr);
+S#endif
+S
+S#if OS_Q_FLUSH_EN > 0
+SINT8U         OSQFlush                (OS_EVENT        *pevent);
+S#endif
+S
+Svoid         *OSQPend                 (OS_EVENT        *pevent,
+S                                       INT16U           timeout,
+S                                       INT8U           *perr);
+S
+S#if OS_Q_PEND_ABORT_EN > 0
+SINT8U         OSQPendAbort            (OS_EVENT        *pevent,
+S                                       INT8U            opt,
+S                                       INT8U           *perr);
+S#endif
+S
+S#if OS_Q_POST_EN > 0
+SINT8U         OSQPost                 (OS_EVENT        *pevent,
+S                                       void            *pmsg);
+S#endif
+S
+S#if OS_Q_POST_FRONT_EN > 0
+SINT8U         OSQPostFront            (OS_EVENT        *pevent,
+S                                       void            *pmsg);
+S#endif
+S
+S#if OS_Q_POST_OPT_EN > 0
+SINT8U         OSQPostOpt              (OS_EVENT        *pevent,
+S                                       void            *pmsg,
+S                                       INT8U            opt);
+S#endif
+S
+S#if OS_Q_QUERY_EN > 0
+SINT8U         OSQQuery                (OS_EVENT        *pevent,
+S                                       OS_Q_DATA       *p_q_data);
+S#endif
+S
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          SEMAPHORE MANAGEMENT
+N*********************************************************************************************************
+N*/
+N#if OS_SEM_EN > 0
+X#if 1 > 0
+N
+N#if OS_SEM_ACCEPT_EN > 0
+X#if 1 > 0
+NINT16U        OSSemAccept             (OS_EVENT        *pevent);
+N#endif
+N
+NOS_EVENT     *OSSemCreate             (INT16U           cnt);
+N
+N#if OS_SEM_DEL_EN > 0
+X#if 1 > 0
+NOS_EVENT     *OSSemDel                (OS_EVENT        *pevent,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N#endif
+N
+Nvoid          OSSemPend               (OS_EVENT        *pevent,
+N                                       INT16U           timeout,
+N                                       INT8U           *perr);
+N
+N#if OS_SEM_PEND_ABORT_EN > 0
+X#if 1 > 0
+NINT8U         OSSemPendAbort          (OS_EVENT        *pevent,
+N                                       INT8U            opt,
+N                                       INT8U           *perr);
+N#endif
+N
+NINT8U         OSSemPost               (OS_EVENT        *pevent);
+N
+N#if OS_SEM_QUERY_EN > 0
+X#if 1 > 0
+NINT8U         OSSemQuery              (OS_EVENT        *pevent,
+N                                       OS_SEM_DATA     *p_sem_data);
+N#endif
+N
+N#if OS_SEM_SET_EN > 0
+X#if 1 > 0
+Nvoid          OSSemSet                (OS_EVENT        *pevent,
+N                                       INT16U           cnt,
+N                                       INT8U           *perr);
+N#endif
+N
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                            TASK MANAGEMENT
+N*********************************************************************************************************
+N*/
+N#if OS_TASK_CHANGE_PRIO_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskChangePrio        (INT8U            oldprio,
+N                                       INT8U            newprio);
+N#endif
+N
+N#if OS_TASK_CREATE_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskCreate            (void           (*task)(void *p_arg),
+N                                       void            *p_arg,
+N                                       OS_STK          *ptos,
+N                                       INT8U            prio);
+N#endif
+N
+N#if OS_TASK_CREATE_EXT_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskCreateExt         (void           (*task)(void *p_arg),
+N                                       void            *p_arg,
+N                                       OS_STK          *ptos,
+N                                       INT8U            prio,
+N                                       INT16U           id,
+N                                       OS_STK          *pbos,
+N                                       INT32U           stk_size,
+N                                       void            *pext,
+N                                       INT16U           opt);
+N#endif
+N
+N#if OS_TASK_DEL_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskDel               (INT8U            prio);
+NINT8U         OSTaskDelReq            (INT8U            prio);
+N#endif
+N
+N#if OS_TASK_NAME_SIZE > 1
+X#if 16 > 1
+NINT8U         OSTaskNameGet           (INT8U            prio,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N
+Nvoid          OSTaskNameSet           (INT8U            prio,
+N                                       INT8U           *pname,
+N                                       INT8U           *perr);
+N#endif
+N
+N#if OS_TASK_SUSPEND_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskResume            (INT8U            prio);
+NINT8U         OSTaskSuspend           (INT8U            prio);
+N#endif
+N
+N#if (OS_TASK_STAT_STK_CHK_EN > 0) && (OS_TASK_CREATE_EXT_EN > 0)
+X#if (1 > 0) && (1 > 0)
+NINT8U         OSTaskStkChk            (INT8U            prio,
+N                                       OS_STK_DATA     *p_stk_data);
+N#endif
+N
+N#if OS_TASK_QUERY_EN > 0
+X#if 1 > 0
+NINT8U         OSTaskQuery             (INT8U            prio,
+N                                       OS_TCB          *p_task_data);
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                            TIME MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+Nvoid          OSTimeDly               (INT16U           ticks);
+N
+N#if OS_TIME_DLY_HMSM_EN > 0
+X#if 1 > 0
+NINT8U         OSTimeDlyHMSM           (INT8U            hours,
+N                                       INT8U            minutes,
+N                                       INT8U            seconds,
+N                                       INT16U           milli);
+N#endif
+N
+N#if OS_TIME_DLY_RESUME_EN > 0
+X#if 1 > 0
+NINT8U         OSTimeDlyResume         (INT8U            prio);
+N#endif
+N
+N#if OS_TIME_GET_SET_EN > 0
+X#if 1 > 0
+NINT32U        OSTimeGet               (void);
+Nvoid          OSTimeSet               (INT32U           ticks);
+N#endif
+N
+Nvoid          OSTimeTick              (void);
+N
+N/*
+N*********************************************************************************************************
+N*                                            TIMER MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+SOS_TMR      *OSTmrCreate              (INT32U           dly,
+S                                       INT32U           period,
+S                                       INT8U            opt,
+S                                       OS_TMR_CALLBACK  callback,
+S                                       void            *callback_arg,
+S                                       INT8U           *pname,
+S                                       INT8U           *perr);
+S
+SBOOLEAN      OSTmrDel                 (OS_TMR          *ptmr,
+S                                       INT8U           *perr);
+S
+S#if OS_TMR_CFG_NAME_SIZE > 0
+SINT8U        OSTmrNameGet             (OS_TMR          *ptmr,
+S                                       INT8U           *pdest,
+S                                       INT8U           *perr);
+S#endif
+SINT32U       OSTmrRemainGet           (OS_TMR          *ptmr,
+S                                       INT8U           *perr);
+S
+SINT8U        OSTmrStateGet            (OS_TMR          *ptmr,
+S                                       INT8U           *perr);
+S
+SBOOLEAN      OSTmrStart               (OS_TMR          *ptmr,
+S                                       INT8U           *perr);
+S
+SBOOLEAN      OSTmrStop                (OS_TMR          *ptmr,
+S                                       INT8U            opt,
+S                                       void            *callback_arg,
+S                                       INT8U           *perr);
+S
+SINT8U        OSTmrSignal              (void);
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                             MISCELLANEOUS
+N*********************************************************************************************************
+N*/
+N
+Nvoid          OSInit                  (void);
+N
+Nvoid          OSIntEnter              (void);
+Nvoid          OSIntExit               (void);
+N
+N#if OS_SCHED_LOCK_EN > 0
+X#if 1 > 0
+Nvoid          OSSchedLock             (void);
+Nvoid          OSSchedUnlock           (void);
+N#endif
+N
+Nvoid          OSStart                 (void);
+N
+Nvoid          OSStatInit              (void);
+N
+NINT16U        OSVersion               (void);
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                      INTERNAL FUNCTION PROTOTYPES
+N*                            (Your application MUST NOT call these functions)
+N*********************************************************************************************************
+N*/
+N
+N#if OS_TASK_DEL_EN > 0
+X#if 1 > 0
+Nvoid          OS_Dummy                (void);
+N#endif
+N
+N#if (OS_EVENT_EN)
+X#if ((((0 > 0) && (4 > 0)) || (1 > 0) || (1 > 0) || (0 > 0)))
+NINT8U         OS_EventTaskRdy         (OS_EVENT        *pevent,
+N                                       void            *pmsg,
+N                                       INT8U            msk,
+N                                       INT8U            pend_stat);
+N
+Nvoid          OS_EventTaskWait        (OS_EVENT        *pevent);
+N
+Nvoid          OS_EventTaskRemove      (OS_TCB          *ptcb,
+N                                       OS_EVENT        *pevent);
+N
+N#if (OS_EVENT_MULTI_EN > 0)
+X#if (1 > 0)
+Nvoid          OS_EventTaskWaitMulti   (OS_EVENT       **pevents_wait);
+N
+Nvoid          OS_EventTaskRemoveMulti (OS_TCB          *ptcb,
+N                                       OS_EVENT       **pevents_multi);
+N#endif
+N
+Nvoid          OS_EventWaitListInit    (OS_EVENT        *pevent);
+N#endif
+N
+N#if (OS_FLAG_EN > 0) && (OS_MAX_FLAGS > 0)
+X#if (1 > 0) && (5 > 0)
+Nvoid          OS_FlagInit             (void);
+Nvoid          OS_FlagUnlink           (OS_FLAG_NODE    *pnode);
+N#endif
+N
+Nvoid          OS_MemClr               (INT8U           *pdest,
+N                                       INT16U           size);
+N
+Nvoid          OS_MemCopy              (INT8U           *pdest,
+N                                       INT8U           *psrc,
+N                                       INT16U           size);
+N
+N#if (OS_MEM_EN > 0) && (OS_MAX_MEM_PART > 0)
+X#if (0 > 0) && (5 > 0)
+Svoid          OS_MemInit              (void);
+N#endif
+N
+N#if OS_Q_EN > 0
+X#if 0 > 0
+Svoid          OS_QInit                (void);
+N#endif
+N
+Nvoid          OS_Sched                (void);
+N
+N#if (OS_EVENT_NAME_SIZE > 1) || (OS_FLAG_NAME_SIZE > 1) || (OS_MEM_NAME_SIZE > 1) || (OS_TASK_NAME_SIZE > 1)
+X#if (16 > 1) || (16 > 1) || (16 > 1) || (16 > 1)
+NINT8U         OS_StrCopy              (INT8U           *pdest,
+N                                       INT8U           *psrc);
+N
+NINT8U         OS_StrLen               (INT8U           *psrc);
+N#endif
+N
+Nvoid          OS_TaskIdle             (void            *p_arg);
+N
+N#if OS_TASK_STAT_EN > 0
+X#if 1 > 0
+Nvoid          OS_TaskStat             (void            *p_arg);
+N#endif
+N
+N#if (OS_TASK_STAT_STK_CHK_EN > 0) && (OS_TASK_CREATE_EXT_EN > 0)
+X#if (1 > 0) && (1 > 0)
+Nvoid          OS_TaskStkClr           (OS_STK          *pbos,
+N                                       INT32U           size,
+N                                       INT16U           opt);
+N#endif
+N
+N#if (OS_TASK_STAT_STK_CHK_EN > 0) && (OS_TASK_CREATE_EXT_EN > 0)
+X#if (1 > 0) && (1 > 0)
+Nvoid          OS_TaskStatStkChk       (void);
+N#endif
+N
+NINT8U         OS_TCBInit              (INT8U            prio,
+N                                       OS_STK          *ptos,
+N                                       OS_STK          *pbos,
+N                                       INT16U           id,
+N                                       INT32U           stk_size,
+N                                       void            *pext,
+N                                       INT16U           opt);
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+Svoid          OSTmr_Init              (void);
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          FUNCTION PROTOTYPES
+N*                                      (Target Specific Functions)
+N*********************************************************************************************************
+N*/
+N
+N#if OS_DEBUG_EN > 0
+X#if 1 > 0
+Nvoid          OSDebugInit             (void);
+N#endif
+N
+Nvoid          OSInitHookBegin         (void);
+Nvoid          OSInitHookEnd           (void);
+N
+Nvoid          OSTaskCreateHook        (OS_TCB          *ptcb);
+Nvoid          OSTaskDelHook           (OS_TCB          *ptcb);
+N
+Nvoid          OSTaskIdleHook          (void);
+N
+Nvoid          OSTaskStatHook          (void);
+NOS_STK       *OSTaskStkInit           (void           (*task)(void *p_arg),
+N                                       void            *p_arg,
+N                                       OS_STK          *ptos,
+N                                       INT16U           opt);
+N
+N#if OS_TASK_SW_HOOK_EN > 0
+X#if 1 > 0
+Nvoid          OSTaskSwHook            (void);
+N#endif
+N
+Nvoid          OSTCBInitHook           (OS_TCB          *ptcb);
+N
+N#if OS_TIME_TICK_HOOK_EN > 0
+X#if 1 > 0
+Nvoid          OSTimeTickHook          (void);
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                          FUNCTION PROTOTYPES
+N*                                   (Application Specific Functions)
+N*********************************************************************************************************
+N*/
+N
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+Svoid          App_TaskCreateHook      (OS_TCB          *ptcb);
+Svoid          App_TaskDelHook         (OS_TCB          *ptcb);
+Svoid          App_TaskIdleHook        (void);
+S
+Svoid          App_TaskStatHook        (void);
+S
+S#if OS_TASK_SW_HOOK_EN > 0
+Svoid          App_TaskSwHook          (void);
+S#endif
+S
+Svoid          App_TCBInitHook         (OS_TCB          *ptcb);
+S
+S#if OS_TIME_TICK_HOOK_EN > 0
+Svoid          App_TimeTickHook        (void);
+S#endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                          FUNCTION PROTOTYPES
+N*
+N* IMPORTANT: These prototypes MUST be placed in OS_CPU.H
+N*********************************************************************************************************
+N*/
+N
+N#if 0
+Svoid          OSStartHighRdy          (void);
+Svoid          OSIntCtxSw              (void);
+Svoid          OSCtxSw                 (void);
+N#endif
+N
+N/*$PAGE*/
+N/*
+N*********************************************************************************************************
+N*                                   LOOK FOR MISSING #define CONSTANTS
+N*
+N* This section is used to generate ERROR messages at compile time if certain #define constants are
+N* MISSING in OS_CFG.H.  This allows you to quickly determine the source of the error.
+N*
+N* You SHOULD NOT change this section UNLESS you would like to add more comments as to the source of the
+N* compile time error.
+N*********************************************************************************************************
+N*/
+N
+N/*
+N*********************************************************************************************************
+N*                                            EVENT FLAGS
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_FLAG_EN
+S#error  "OS_CFG.H, Missing OS_FLAG_EN: Enable (1) or Disable (0) code generation for Event Flags"
+N#else
+N    #ifndef OS_MAX_FLAGS
+S    #error  "OS_CFG.H, Missing OS_MAX_FLAGS: Max. number of Event Flag Groups in your application"
+N    #else
+N        #if     OS_MAX_FLAGS > 65500u
+X        #if     5 > 65500u
+S        #error  "OS_CFG.H, OS_MAX_FLAGS must be <= 65500"
+N        #endif
+N    #endif
+N
+N    #ifndef OS_FLAGS_NBITS
+S    #error  "OS_CFG.H, Missing OS_FLAGS_NBITS: Determine #bits used for event flags, MUST be either 8, 16 or 32"
+N    #endif
+N
+N    #ifndef OS_FLAG_WAIT_CLR_EN
+S    #error  "OS_CFG.H, Missing OS_FLAG_WAIT_CLR_EN: Include code for Wait on Clear EVENT FLAGS"
+N    #endif
+N
+N    #ifndef OS_FLAG_ACCEPT_EN
+S    #error  "OS_CFG.H, Missing OS_FLAG_ACCEPT_EN: Include code for OSFlagAccept()"
+N    #endif
+N
+N    #ifndef OS_FLAG_DEL_EN
+S    #error  "OS_CFG.H, Missing OS_FLAG_DEL_EN: Include code for OSFlagDel()"
+N    #endif
+N
+N    #ifndef OS_FLAG_NAME_SIZE
+S    #error  "OS_CFG.H, Missing OS_FLAG_NAME_SIZE: Determines the size of flag group names"
+N    #endif
+N
+N    #ifndef OS_FLAG_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_FLAG_QUERY_EN: Include code for OSFlagQuery()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           MESSAGE MAILBOXES
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_MBOX_EN
+S#error  "OS_CFG.H, Missing OS_MBOX_EN: Enable (1) or Disable (0) code generation for MAILBOXES"
+N#else
+N    #ifndef OS_MBOX_ACCEPT_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_ACCEPT_EN: Include code for OSMboxAccept()"
+N    #endif
+N
+N    #ifndef OS_MBOX_DEL_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_DEL_EN: Include code for OSMboxDel()"
+N    #endif
+N
+N    #ifndef OS_MBOX_PEND_ABORT_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_PEND_ABORT_EN: Include code for OSMboxPendAbort()"
+N    #endif
+N
+N    #ifndef OS_MBOX_POST_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_POST_EN: Include code for OSMboxPost()"
+N    #endif
+N
+N    #ifndef OS_MBOX_POST_OPT_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_POST_OPT_EN: Include code for OSMboxPostOpt()"
+N    #endif
+N
+N    #ifndef OS_MBOX_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_MBOX_QUERY_EN: Include code for OSMboxQuery()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           MEMORY MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_MEM_EN
+S#error  "OS_CFG.H, Missing OS_MEM_EN: Enable (1) or Disable (0) code generation for MEMORY MANAGER"
+N#else
+N    #ifndef OS_MAX_MEM_PART
+S    #error  "OS_CFG.H, Missing OS_MAX_MEM_PART: Max. number of memory partitions"
+N    #else
+N        #if     OS_MAX_MEM_PART > 65500u
+X        #if     5 > 65500u
+S        #error  "OS_CFG.H, OS_MAX_MEM_PART must be <= 65500"
+N        #endif
+N    #endif
+N
+N    #ifndef OS_MEM_NAME_SIZE
+S    #error  "OS_CFG.H, Missing OS_MEM_NAME_SIZE: Determines the size of memory partition names"
+N    #endif
+N
+N    #ifndef OS_MEM_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_MEM_QUERY_EN: Include code for OSMemQuery()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                       MUTUAL EXCLUSION SEMAPHORES
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_MUTEX_EN
+S#error  "OS_CFG.H, Missing OS_MUTEX_EN: Enable (1) or Disable (0) code generation for MUTEX"
+N#else
+N    #ifndef OS_MUTEX_ACCEPT_EN
+S    #error  "OS_CFG.H, Missing OS_MUTEX_ACCEPT_EN: Include code for OSMutexAccept()"
+N    #endif
+N
+N    #ifndef OS_MUTEX_DEL_EN
+S    #error  "OS_CFG.H, Missing OS_MUTEX_DEL_EN: Include code for OSMutexDel()"
+N    #endif
+N
+N    #ifndef OS_MUTEX_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_MUTEX_QUERY_EN: Include code for OSMutexQuery()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                              MESSAGE QUEUES
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_Q_EN
+S#error  "OS_CFG.H, Missing OS_Q_EN: Enable (1) or Disable (0) code generation for QUEUES"
+N#else
+N    #ifndef OS_MAX_QS
+S    #error  "OS_CFG.H, Missing OS_MAX_QS: Max. number of queue control blocks"
+N    #else
+N        #if     OS_MAX_QS > 65500u
+X        #if     4 > 65500u
+S        #error  "OS_CFG.H, OS_MAX_QS must be <= 65500"
+N        #endif
+N    #endif
+N
+N    #ifndef OS_Q_ACCEPT_EN
+S    #error  "OS_CFG.H, Missing OS_Q_ACCEPT_EN: Include code for OSQAccept()"
+N    #endif
+N
+N    #ifndef OS_Q_DEL_EN
+S    #error  "OS_CFG.H, Missing OS_Q_DEL_EN: Include code for OSQDel()"
+N    #endif
+N
+N    #ifndef OS_Q_FLUSH_EN
+S    #error  "OS_CFG.H, Missing OS_Q_FLUSH_EN: Include code for OSQFlush()"
+N    #endif
+N
+N    #ifndef OS_Q_PEND_ABORT_EN
+S    #error  "OS_CFG.H, Missing OS_Q_PEND_ABORT_EN: Include code for OSQPendAbort()"
+N    #endif
+N
+N    #ifndef OS_Q_POST_EN
+S    #error  "OS_CFG.H, Missing OS_Q_POST_EN: Include code for OSQPost()"
+N    #endif
+N
+N    #ifndef OS_Q_POST_FRONT_EN
+S    #error  "OS_CFG.H, Missing OS_Q_POST_FRONT_EN: Include code for OSQPostFront()"
+N    #endif
+N
+N    #ifndef OS_Q_POST_OPT_EN
+S    #error  "OS_CFG.H, Missing OS_Q_POST_OPT_EN: Include code for OSQPostOpt()"
+N    #endif
+N
+N    #ifndef OS_Q_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_Q_QUERY_EN: Include code for OSQQuery()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                              SEMAPHORES
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_SEM_EN
+S#error  "OS_CFG.H, Missing OS_SEM_EN: Enable (1) or Disable (0) code generation for SEMAPHORES"
+N#else
+N    #ifndef OS_SEM_ACCEPT_EN
+S    #error  "OS_CFG.H, Missing OS_SEM_ACCEPT_EN: Include code for OSSemAccept()"
+N    #endif
+N
+N    #ifndef OS_SEM_DEL_EN
+S    #error  "OS_CFG.H, Missing OS_SEM_DEL_EN: Include code for OSSemDel()"
+N    #endif
+N
+N    #ifndef OS_SEM_PEND_ABORT_EN
+S    #error  "OS_CFG.H, Missing OS_SEM_PEND_ABORT_EN: Include code for OSSemPendAbort()"
+N    #endif
+N
+N    #ifndef OS_SEM_QUERY_EN
+S    #error  "OS_CFG.H, Missing OS_SEM_QUERY_EN: Include code for OSSemQuery()"
+N    #endif
+N
+N    #ifndef OS_SEM_SET_EN
+S    #error  "OS_CFG.H, Missing OS_SEM_SET_EN: Include code for OSSemSet()"
+N    #endif
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                             TASK MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_MAX_TASKS
+S#error  "OS_CFG.H, Missing OS_MAX_TASKS: Max. number of tasks in your application"
+N#else
+N    #if     OS_MAX_TASKS < 2
+X    #if     20 < 2
+S    #error  "OS_CFG.H,         OS_MAX_TASKS must be >= 2"
+N    #endif
+N
+N    #if     OS_MAX_TASKS >  ((OS_LOWEST_PRIO - OS_N_SYS_TASKS) + 1)
+X    #if     20 >  ((31 - 2u) + 1)
+S    #error  "OS_CFG.H,         OS_MAX_TASKS must be <= OS_LOWEST_PRIO - OS_N_SYS_TASKS + 1"
+N    #endif
+N
+N#endif
+N
+N#if     OS_LOWEST_PRIO >  254
+X#if     31 >  254
+S#error  "OS_CFG.H,         OS_LOWEST_PRIO must be <= 254 in V2.8x and higher"
+N#endif
+N
+N#ifndef OS_TASK_IDLE_STK_SIZE
+S#error  "OS_CFG.H, Missing OS_TASK_IDLE_STK_SIZE: Idle task stack size"
+N#endif
+N
+N#ifndef OS_TASK_STAT_EN
+S#error  "OS_CFG.H, Missing OS_TASK_STAT_EN: Enable (1) or Disable(0) the statistics task"
+N#endif
+N
+N#ifndef OS_TASK_STAT_STK_SIZE
+S#error  "OS_CFG.H, Missing OS_TASK_STAT_STK_SIZE: Statistics task stack size"
+N#endif
+N
+N#ifndef OS_TASK_STAT_STK_CHK_EN
+S#error  "OS_CFG.H, Missing OS_TASK_STAT_STK_CHK_EN: Check task stacks from statistics task"
+N#endif
+N
+N#ifndef OS_TASK_CHANGE_PRIO_EN
+S#error  "OS_CFG.H, Missing OS_TASK_CHANGE_PRIO_EN: Include code for OSTaskChangePrio()"
+N#endif
+N
+N#ifndef OS_TASK_CREATE_EN
+S#error  "OS_CFG.H, Missing OS_TASK_CREATE_EN: Include code for OSTaskCreate()"
+N#endif
+N
+N#ifndef OS_TASK_CREATE_EXT_EN
+S#error  "OS_CFG.H, Missing OS_TASK_CREATE_EXT_EN: Include code for OSTaskCreateExt()"
+N#endif
+N
+N#ifndef OS_TASK_DEL_EN
+S#error  "OS_CFG.H, Missing OS_TASK_DEL_EN: Include code for OSTaskDel()"
+N#endif
+N
+N#ifndef OS_TASK_NAME_SIZE
+S#error  "OS_CFG.H, Missing OS_TASK_NAME_SIZE: Determine the size of task names"
+N#endif
+N
+N#ifndef OS_TASK_SUSPEND_EN
+S#error  "OS_CFG.H, Missing OS_TASK_SUSPEND_EN: Include code for OSTaskSuspend() and OSTaskResume()"
+N#endif
+N
+N#ifndef OS_TASK_QUERY_EN
+S#error  "OS_CFG.H, Missing OS_TASK_QUERY_EN: Include code for OSTaskQuery()"
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                             TIME MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_TICKS_PER_SEC
+S#error  "OS_CFG.H, Missing OS_TICKS_PER_SEC: Sets the number of ticks in one second"
+N#endif
+N
+N#ifndef OS_TIME_DLY_HMSM_EN
+S#error  "OS_CFG.H, Missing OS_TIME_DLY_HMSM_EN: Include code for OSTimeDlyHMSM()"
+N#endif
+N
+N#ifndef OS_TIME_DLY_RESUME_EN
+S#error  "OS_CFG.H, Missing OS_TIME_DLY_RESUME_EN: Include code for OSTimeDlyResume()"
+N#endif
+N
+N#ifndef OS_TIME_GET_SET_EN
+S#error  "OS_CFG.H, Missing OS_TIME_GET_SET_EN: Include code for OSTimeGet() and OSTimeSet()"
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                             TIMER MANAGEMENT
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_TMR_EN
+S#error  "OS_CFG.H, Missing OS_TMR_EN: When (1) enables code generation for Timer Management"
+S#elif   OS_TMR_EN > 0
+X#elif   0 > 0
+S    #if     OS_SEM_EN == 0
+S    #error  "OS_CFG.H, Semaphore management is required (set OS_SEM_EN to 1) when enabling Timer Management."
+S    #error  "          Timer management require TWO semaphores."
+S    #endif
+S
+S    #ifndef OS_TMR_CFG_MAX
+S    #error  "OS_CFG.H, Missing OS_TMR_CFG_MAX: Determines the total number of timers in an application (2 .. 65500)"
+S    #else
+S        #if OS_TMR_CFG_MAX < 2
+S        #error  "OS_CFG.H, OS_TMR_CFG_MAX should be between 2 and 65500"
+S        #endif
+S
+S        #if OS_TMR_CFG_MAX > 65500
+S        #error  "OS_CFG.H, OS_TMR_CFG_MAX should be between 2 and 65500"
+S        #endif
+S    #endif
+S
+S    #ifndef OS_TMR_CFG_WHEEL_SIZE
+S    #error  "OS_CFG.H, Missing OS_TMR_CFG_WHEEL_SIZE: Sets the size of the timer wheel (1 .. 1023)"
+S    #else
+S        #if OS_TMR_CFG_WHEEL_SIZE < 2
+S        #error  "OS_CFG.H, OS_TMR_CFG_WHEEL_SIZE should be between 2 and 1024"
+S        #endif
+S
+S        #if OS_TMR_CFG_WHEEL_SIZE > 1024
+S        #error  "OS_CFG.H, OS_TMR_CFG_WHEEL_SIZE should be between 2 and 1024"
+S        #endif
+S    #endif
+S
+S    #ifndef OS_TMR_CFG_NAME_SIZE
+S    #error  "OS_CFG.H, Missing OS_TMR_CFG_NAME_SIZE: Determines the number of characters used for Timer names"
+S    #endif
+S
+S    #ifndef OS_TMR_CFG_TICKS_PER_SEC
+S    #error  "OS_CFG.H, Missing OS_TMR_CFG_TICKS_PER_SEC: Determines the rate at which tiem timer management task will run (Hz)"
+S    #endif
+S
+S    #ifndef OS_TASK_TMR_STK_SIZE
+S    #error  "OS_CFG.H, Missing OS_TASK_TMR_STK_SIZE: Determines the size of the Timer Task's stack"
+S    #endif
+N#endif
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                            MISCELLANEOUS
+N*********************************************************************************************************
+N*/
+N
+N#ifndef OS_ARG_CHK_EN
+S#error  "OS_CFG.H, Missing OS_ARG_CHK_EN: Enable (1) or Disable (0) argument checking"
+N#endif
+N
+N
+N#ifndef OS_CPU_HOOKS_EN
+S#error  "OS_CFG.H, Missing OS_CPU_HOOKS_EN: uC/OS-II hooks are found in the processor port files when 1"
+N#endif
+N
+N
+N#ifndef OS_APP_HOOKS_EN
+S#error  "OS_CFG.H, Missing OS_APP_HOOKS_EN: Application-defined hooks are called from the uC/OS-II hooks"
+N#endif
+N
+N
+N#ifndef OS_DEBUG_EN
+S#error  "OS_CFG.H, Missing OS_DEBUG_EN: Allows you to include variables for debugging or not"
+N#endif
+N
+N
+N#ifndef OS_LOWEST_PRIO
+S#error  "OS_CFG.H, Missing OS_LOWEST_PRIO: Defines the lowest priority that can be assigned"
+N#endif
+N
+N
+N#ifndef OS_MAX_EVENTS
+S#error  "OS_CFG.H, Missing OS_MAX_EVENTS: Max. number of event control blocks in your application"
+N#else
+N    #if     OS_MAX_EVENTS > 65500u
+X    #if     10 > 65500u
+S    #error  "OS_CFG.H, OS_MAX_EVENTS must be <= 65500"
+N    #endif
+N#endif
+N
+N
+N#ifndef OS_SCHED_LOCK_EN
+S#error  "OS_CFG.H, Missing OS_SCHED_LOCK_EN: Include code for OSSchedLock() and OSSchedUnlock()"
+N#endif
+N
+N
+N#ifndef OS_EVENT_MULTI_EN
+S#error  "OS_CFG.H, Missing OS_EVENT_MULTI_EN: Include code for OSEventPendMulti()"
+N#endif
+N
+N
+N#ifndef OS_TASK_PROFILE_EN
+S#error  "OS_CFG.H, Missing OS_TASK_PROFILE_EN: Include data structure for run-time task profiling"
+N#endif
+N
+N
+N#ifndef OS_TASK_SW_HOOK_EN
+S#error  "OS_CFG.H, Missing OS_TASK_SW_HOOK_EN: Allows you to include the code for OSTaskSwHook() or not"
+N#endif
+N
+N
+N#ifndef OS_TICK_STEP_EN
+S#error  "OS_CFG.H, Missing OS_TICK_STEP_EN: Allows to 'step' one tick at a time with uC/OS-View"
+N#endif
+N
+N
+N#ifndef OS_TIME_TICK_HOOK_EN
+S#error  "OS_CFG.H, Missing OS_TIME_TICK_HOOK_EN: Allows you to include the code for OSTimeTickHook() or not"
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                         SAFETY CRITICAL USE
+N*********************************************************************************************************
+N*/
+N
+N#ifdef SAFETY_CRITICAL_RELEASE
+S
+S#if    OS_ARG_CHK_EN < 1
+S#error "OS_CFG.H, OS_ARG_CHK_EN must be enabled for safety-critical release code"
+S#endif
+S
+S#if    OS_APP_HOOKS_EN > 0
+S#error "OS_CFG.H, OS_APP_HOOKS_EN must be disabled for safety-critical release code"
+S#endif
+S
+S#if    OS_DEBUG_EN > 0
+S#error "OS_CFG.H, OS_DEBUG_EN must be disabled for safety-critical release code"
+S#endif
+S
+S#ifdef CANTATA
+S#error "OS_CFG.H, CANTATA must be disabled for safety-critical release code"
+S#endif
+S
+S#ifdef OS_SCHED_LOCK_EN
+S#error "OS_CFG.H, OS_SCHED_LOCK_EN must be disabled for safety-critical release code"
+S#endif
+S
+S#ifdef VSC_VALIDATION_MODE
+S#error "OS_CFG.H, VSC_VALIDATION_MODE must be disabled for safety-critical release code"
+S#endif
+S
+S#if    OS_TASK_STAT_EN > 0
+S#error "OS_CFG.H, OS_TASK_STAT_EN must be disabled for safety-critical release code"
+S#endif
+S
+S#if    OS_TICK_STEP_EN > 0
+S#error "OS_CFG.H, OS_TICK_STEP_EN must be disabled for safety-critical release code"
+S#endif
+S
+S#if    OS_FLAG_EN > 0
+S    #if    OS_FLAG_DEL_EN > 0
+S    #error "OS_CFG.H, OS_FLAG_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_MBOX_EN > 0
+S    #if    OS_MBOX_DEL_EN > 0
+S    #error "OS_CFG.H, OS_MBOX_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_MUTEX_EN > 0
+S    #if    OS_MUTEX_DEL_EN > 0
+S    #error "OS_CFG.H, OS_MUTEX_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_Q_EN > 0
+S    #if    OS_Q_DEL_EN > 0
+S    #error "OS_CFG.H, OS_Q_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_SEM_EN > 0
+S    #if    OS_SEM_DEL_EN > 0
+S    #error "OS_CFG.H, OS_SEM_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_TASK_EN > 0
+S    #if    OS_TASK_DEL_EN > 0
+S    #error "OS_CFG.H, OS_TASK_DEL_EN must be disabled for safety-critical release code"
+S    #endif
+S#endif
+S
+S#if    OS_CRITICAL_METHOD != 3
+S#error "OS_CPU.H, OS_CRITICAL_METHOD must be type 3 for safety-critical release code"
+S#endif
+S
+N#endif  /* ------------------------ SAFETY_CRITICAL_RELEASE ------------------------ */
+N
+N#ifdef __cplusplus
+S}
+N#endif
+N
+N#endif
+L 24 "ucosii\port\os_cpu_c_keil.c" 2
+N
+N/*
+N*********************************************************************************************************
+N*                                          LOCAL VARIABLES
+N*********************************************************************************************************
+N*/
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+Sstatic  INT16U  OSTmrCtr;
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                          SYS TICK DEFINES
+N*********************************************************************************************************
+N*/
+N
+N#define  OS_CPU_CM3_NVIC_ST_CTRL    (*((volatile INT32U *)0xE000E010))   /* SysTick Ctrl & Status Reg. */
+N#define  OS_CPU_CM3_NVIC_ST_RELOAD  (*((volatile INT32U *)0xE000E014))   /* SysTick Reload  Value Reg. */
+N#define  OS_CPU_CM3_NVIC_ST_CURRENT (*((volatile INT32U *)0xE000E018))   /* SysTick Current Value Reg. */
+N#define  OS_CPU_CM3_NVIC_ST_CAL     (*((volatile INT32U *)0xE000E01C))   /* SysTick Cal     Value Reg. */
+N
+N#define  OS_CPU_CM3_NVIC_ST_CTRL_COUNT                    0x00010000     /* Count flag.                */
+N#define  OS_CPU_CM3_NVIC_ST_CTRL_CLK_SRC                  0x00000004     /* Clock Source.              */
+N#define  OS_CPU_CM3_NVIC_ST_CTRL_INTEN                    0x00000002     /* Interrupt enable.          */
+N#define  OS_CPU_CM3_NVIC_ST_CTRL_ENABLE                   0x00000001     /* Counter mode.              */
+N
+N/*
+N*********************************************************************************************************
+N*                                       OS INITIALIZATION HOOK
+N*                                            (BEGINNING)
+N*
+N* Description: This function is called by OSInit() at the beginning of OSInit().
+N*
+N* Arguments  : none
+N*
+N* Note(s)    : 1) Interrupts should be disabled during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0 && OS_VERSION > 203
+X#if 1 > 0 && 286u > 203
+Nvoid  OSInitHookBegin (void)
+N{
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+S    OSTmrCtr = 0;
+N#endif
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                       OS INITIALIZATION HOOK
+N*                                               (END)
+N*
+N* Description: This function is called by OSInit() at the end of OSInit().
+N*
+N* Arguments  : none
+N*
+N* Note(s)    : 1) Interrupts should be disabled during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0 && OS_VERSION > 203
+X#if 1 > 0 && 286u > 203
+Nvoid  OSInitHookEnd (void)
+N{
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                          TASK CREATION HOOK
+N*
+N* Description: This function is called when a task is created.
+N*
+N* Arguments  : ptcb   is a pointer to the task control block of the task being created.
+N*
+N* Note(s)    : 1) Interrupts are disabled during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0
+X#if 1 > 0
+Nvoid  OSTaskCreateHook (OS_TCB *ptcb)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TaskCreateHook(ptcb);
+N#else
+N    (void)ptcb;                                  /* Prevent compiler warning                           */
+N#endif
+N}
+N#endif
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                           TASK DELETION HOOK
+N*
+N* Description: This function is called when a task is deleted.
+N*
+N* Arguments  : ptcb   is a pointer to the task control block of the task being deleted.
+N*
+N* Note(s)    : 1) Interrupts are disabled during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0
+X#if 1 > 0
+Nvoid  OSTaskDelHook (OS_TCB *ptcb)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TaskDelHook(ptcb);
+N#else
+N    (void)ptcb;                                  /* Prevent compiler warning                           */
+N#endif
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                             IDLE TASK HOOK
+N*
+N* Description: This function is called by the idle task.  This hook has been added to allow you to do
+N*              such things as STOP the CPU to conserve power.
+N*
+N* Arguments  : none
+N*
+N* Note(s)    : 1) Interrupts are enabled during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0 && OS_VERSION >= 251
+X#if 1 > 0 && 286u >= 251
+Nvoid  OSTaskIdleHook (void)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TaskIdleHook();
+N#endif
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           STATISTIC TASK HOOK
+N*
+N* Description: This function is called every second by uC/OS-II's statistics task.  This allows your
+N*              application to add functionality to the statistics task.
+N*
+N* Arguments  : none
+N*********************************************************************************************************
+N*/
+N
+N#if OS_CPU_HOOKS_EN > 0
+X#if 1 > 0
+Nvoid  OSTaskStatHook (void)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TaskStatHook();
+N#endif
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                        INITIALIZE A TASK'S STACK
+N*
+N* Description: This function is called by either OSTaskCreate() or OSTaskCreateExt() to initialize the
+N*              stack frame of the task being created.  This function is highly processor specific.
+N*
+N* Arguments  : task          is a pointer to the task code
+N*
+N*              p_arg         is a pointer to a user supplied data area that will be passed to the task
+N*                            when the task first executes.
+N*
+N*              ptos          is a pointer to the top of stack.  It is assumed that 'ptos' points to
+N*                            a 'free' entry on the task stack.  If OS_STK_GROWTH is set to 1 then
+N*                            'ptos' will contain the HIGHEST valid address of the stack.  Similarly, if
+N*                            OS_STK_GROWTH is set to 0, the 'ptos' will contains the LOWEST valid address
+N*                            of the stack.
+N*
+N*              opt           specifies options that can be used to alter the behavior of OSTaskStkInit().
+N*                            (see uCOS_II.H for OS_TASK_OPT_xxx).
+N*
+N* Returns    : Always returns the location of the new top-of-stack once the processor registers have
+N*              been placed on the stack in the proper order.
+N*
+N* Note(s)    : 1) Interrupts are enabled when your task starts executing.
+N*              2) All tasks run in Thread mode, using process stack.
+N*********************************************************************************************************
+N*/
+N
+NOS_STK *OSTaskStkInit (void (*task)(void *p_arg), void *p_arg, OS_STK *ptos, INT16U opt)
+N{
+N    OS_STK *stk;
+N
+N
+N    (void)opt;                                   /* 'opt' is not used, prevent warning                 */
+N    stk       = ptos;                            /* Load stack pointer                                 */
+N
+N                                                 /* Registers stacked as if auto-saved on exception    */
+N    *(stk)    = (INT32U)0x01000000L;             /* xPSR                                               */
+N    *(--stk)  = (INT32U)task;                    /* Entry Point                                        */
+N    *(--stk)  = (INT32U)0xFFFFFFFEL;             /* R14 (LR) (init value will cause fault if ever used)*/
+N    *(--stk)  = (INT32U)0x12121212L;             /* R12                                                */
+N    *(--stk)  = (INT32U)0x03030303L;             /* R3                                                 */
+N    *(--stk)  = (INT32U)0x02020202L;             /* R2                                                 */
+N    *(--stk)  = (INT32U)0x01010101L;             /* R1                                                 */
+N    *(--stk)  = (INT32U)p_arg;                   /* R0 : argument                                      */
+N
+N                                                 /* Remaining registers saved on process stack         */
+N    *(--stk)  = (INT32U)0x11111111L;             /* R11                                                */
+N    *(--stk)  = (INT32U)0x10101010L;             /* R10                                                */
+N    *(--stk)  = (INT32U)0x09090909L;             /* R9                                                 */
+N    *(--stk)  = (INT32U)0x08080808L;             /* R8                                                 */
+N    *(--stk)  = (INT32U)0x07070707L;             /* R7                                                 */
+N    *(--stk)  = (INT32U)0x06060606L;             /* R6                                                 */
+N    *(--stk)  = (INT32U)0x05050505L;             /* R5                                                 */
+N    *(--stk)  = (INT32U)0x04040404L;             /* R4                                                 */
+N
+N    return (stk);
+N}
+N
+N/*
+N*********************************************************************************************************
+N*                                           TASK SWITCH HOOK
+N*
+N* Description: This function is called when a task switch is performed.  This allows you to perform other
+N*              operations during a context switch.
+N*
+N* Arguments  : none
+N*
+N* Note(s)    : 1) Interrupts are disabled during this call.
+N*              2) It is assumed that the global pointer 'OSTCBHighRdy' points to the TCB of the task that
+N*                 will be 'switched in' (i.e. the highest priority task) and, 'OSTCBCur' points to the
+N*                 task being switched out (i.e. the preempted task).
+N*********************************************************************************************************
+N*/
+N#if (OS_CPU_HOOKS_EN > 0) && (OS_TASK_SW_HOOK_EN > 0)
+X#if (1 > 0) && (1 > 0)
+Nvoid  OSTaskSwHook (void)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TaskSwHook();
+N#endif
+N}
+N#endif
+N
+N/*
+N*********************************************************************************************************
+N*                                           OS_TCBInit() HOOK
+N*
+N* Description: This function is called by OS_TCBInit() after setting up most of the TCB.
+N*
+N* Arguments  : ptcb    is a pointer to the TCB of the task being created.
+N*
+N* Note(s)    : 1) Interrupts may or may not be ENABLED during this call.
+N*********************************************************************************************************
+N*/
+N#if OS_CPU_HOOKS_EN > 0 && OS_VERSION > 203
+X#if 1 > 0 && 286u > 203
+Nvoid  OSTCBInitHook (OS_TCB *ptcb)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TCBInitHook(ptcb);
+N#else
+N    (void)ptcb;                                  /* Prevent compiler warning                           */
+N#endif
+N}
+N#endif
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                               TICK HOOK
+N*
+N* Description: This function is called every tick.
+N*
+N* Arguments  : none
+N*
+N* Note(s)    : 1) Interrupts may or may not be ENABLED during this call.
+N*********************************************************************************************************
+N*/
+N#if (OS_CPU_HOOKS_EN > 0) && (OS_TIME_TICK_HOOK_EN > 0)
+X#if (1 > 0) && (1 > 0)
+Nvoid  OSTimeTickHook (void)
+N{
+N#if OS_APP_HOOKS_EN > 0
+X#if 0 > 0
+S    App_TimeTickHook();
+N#endif
+N
+N#if OS_TMR_EN > 0
+X#if 0 > 0
+S    OSTmrCtr++;
+S    if (OSTmrCtr >= (OS_TICKS_PER_SEC / OS_TMR_CFG_TICKS_PER_SEC)) {
+S        OSTmrCtr = 0;
+S        OSTmrSignal();
+S    }
+N#endif
+N}
+N#endif
+N
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                         OS_CPU_SysTickHandler()
+N*
+N* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-II tick
+N*              interrupt.
+N*
+N* Arguments  : none.
+N*
+N* Note(s)    : 1) This function MUST be placed on entry 15 of the Cortex-M3 vector table.
+N*********************************************************************************************************
+N*/
+N
+Nvoid  OS_CPU_SysTickHandler (void)
+N{
+N    OS_CPU_SR  cpu_sr;
+N
+N
+N    OS_ENTER_CRITICAL();                         /* Tell uC/OS-II that we are starting an ISR          */
+X    {cpu_sr = OS_CPU_SR_Save();};                          
+N    OSIntNesting++;
+N    OS_EXIT_CRITICAL();
+X    {OS_CPU_SR_Restore(cpu_sr);};
+N
+N    OSTimeTick();                                /* Call uC/OS-II's OSTimeTick()                       */
+N
+N    OSIntExit();                                 /* Tell uC/OS-II that we are leaving the ISR          */
+N}
+N
+N
+N/*
+N*********************************************************************************************************
+N*                                          OS_CPU_SysTickInit()
+N*
+N* Description: Initialize the SysTick.
+N*
+N* Arguments  : none.
+N*
+N* Note(s)    : 1) This function MUST be called after OSStart() & after processor initialization.
+N*********************************************************************************************************
+N*/
+N
+Nvoid  OS_CPU_SysTickInit (void)
+N{
+N    INT32U  cnts;
+N
+N
+N    cnts = OS_CPU_SysTickClkFreq() / OS_TICKS_PER_SEC;
+X    cnts = OS_CPU_SysTickClkFreq() / 1000;
+N	
+N	  //cnts = SystemCoreClock / OS_TICKS_PER_SEC;
+N
+N    OS_CPU_CM3_NVIC_ST_RELOAD = (cnts - 1);
+X    (*((volatile INT32U *)0xE000E014)) = (cnts - 1);
+N                                                 /* Enable timer.                                      */
+N    OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_CLK_SRC | OS_CPU_CM3_NVIC_ST_CTRL_ENABLE;
+X    (*((volatile INT32U *)0xE000E010))  |= 0x00000004 | 0x00000001;
+N                                                 /* Enable timer interrupt.                            */
+N    OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_INTEN;
+X    (*((volatile INT32U *)0xE000E010))  |= 0x00000002;
+N}

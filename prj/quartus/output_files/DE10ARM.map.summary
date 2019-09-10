@@ -1,0 +1,16 @@
+Analysis & Synthesis Status : Successful - Sun Jun 02 16:08:32 2019
+Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
+Revision Name : DE10ARM
+Top-level Entity Name : DE10ARM
+Family : MAX 10
+Total logic elements : 25,065
+    Total combinational functions : 22,366
+    Dedicated logic registers : 5,760
+Total registers : 5760
+Total pins : 27
+Total virtual pins : 0
+Total memory bits : 1,048,576
+Embedded Multiplier 9-bit elements : 6
+Total PLLs : 0
+UFM blocks : 0
+ADC blocks : 0

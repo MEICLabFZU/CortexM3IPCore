@@ -1,0 +1,13 @@
+.\objects\drive.o: OLED\drive.c
+.\objects\drive.o: OLED\drive.h
+.\objects\drive.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\drive.o: .\include\core_cm3.h
+.\objects\drive.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\drive.o: .\include\core_cmInstr.h
+.\objects\drive.o: .\include\core_cmFunc.h
+.\objects\drive.o: .\include\gpio.h
+.\objects\drive.o: .\include\DE2_115.h
+.\objects\drive.o: D:\Coding\MDKeil\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\drive.o: .\include\core_cm3.h
+.\objects\drive.o: .\include\systick.h
+.\objects\drive.o: .\include\core_cm3.h
